@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../i18n/localizations.dart';
 import '../models/meal.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
@@ -66,7 +67,7 @@ class _SearchScreenState extends State<SearchScreen> {
         backgroundColor: C.bg,
         elevation: 0,
         titleSpacing: 20,
-        title: Text(_searched ? 'Hasil Pencarian' : 'Cari',
+        title: Text(_searched ? context.t('search_results') : context.t('search'),
             style: const TextStyle(
                 fontSize: 18, fontWeight: FontWeight.w800, color: C.ink)),
         actions: [
@@ -100,11 +101,12 @@ class _SearchScreenState extends State<SearchScreen> {
                             child: TextField(
                               controller: _ctrl,
                               onSubmitted: (_) => _search(),
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 border: InputBorder.none,
                                 isCollapsed: true,
-                                hintText: 'Makanan, bahan, kategori…',
-                                hintStyle: TextStyle(color: C.muted, fontSize: 14),
+                                hintText: context.t('search_ph'),
+                                hintStyle:
+                                    const TextStyle(color: C.muted, fontSize: 14),
                               ),
                             ),
                           ),
@@ -127,7 +129,8 @@ class _SearchScreenState extends State<SearchScreen> {
                         color: C.primary,
                         borderRadius: BorderRadius.circular(14),
                       ),
-                      child: const Icon(Icons.search, color: Colors.white, size: 22),
+                      child:
+                          const Icon(Icons.search, color: Colors.white, size: 22),
                     ),
                   ),
                 ],
@@ -135,10 +138,10 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
             // ---- Category grid (only when pushed from home) ----
             if (widget.initialCategory != null && !_searched) ...[
-              const Padding(
-                padding: EdgeInsets.fromLTRB(20, 6, 20, 0),
-                child: Text('Kategori',
-                    style: TextStyle(
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 6, 20, 0),
+                child: Text(context.t('category'),
+                    style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
                         color: C.ink)),
@@ -153,9 +156,9 @@ class _SearchScreenState extends State<SearchScreen> {
                           mainAxisSpacing: 12,
                           crossAxisSpacing: 12,
                           childAspectRatio: 1.35),
-                  itemCount: _cats.length,
+                  itemCount: _cats(context).length,
                   itemBuilder: (_, i) {
-                    final c = _cats[i];
+                    final c = _cats(context)[i];
                     return GestureDetector(
                       onTap: () {
                         _ctrl.text = c.query ?? '';
@@ -207,13 +210,13 @@ class _SearchScreenState extends State<SearchScreen> {
                     ? const Center(
                         child: CircularProgressIndicator(color: C.primary))
                     : !_searched
-                        ? const Center(
+                        ? Center(
                             child: Padding(
-                              padding: EdgeInsets.all(40),
+                              padding: const EdgeInsets.all(40),
                               child: Text(
-                                  'Ketik nama makanan, bahan, atau kategori.\nContoh: ayam, rice, dessert…',
+                                  context.t('empty_search'),
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       color: C.muted,
                                       fontSize: 14,
                                       height: 1.5)),
@@ -224,11 +227,13 @@ class _SearchScreenState extends State<SearchScreen> {
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Text('🍽️', style: TextStyle(fontSize: 40)),
+                                    const Text('🍽️',
+                                        style: TextStyle(fontSize: 40)),
                                     const SizedBox(height: 12),
-                                    Text('Tidak ada hasil untuk “$_activeQuery”',
-                                        style: const TextStyle(
-                                            color: C.muted)),
+                                    Text(
+                                        '${context.t('no_results')} “$_activeQuery”',
+                                        style:
+                                            const TextStyle(color: C.muted)),
                                   ],
                                 ),
                               )
@@ -322,13 +327,13 @@ class _ResultRow extends StatelessWidget {
   }
 }
 
-final _cats = [
-  const AppCategory('Aneka Nasi', '🍚', Color(0xFFE8842C), '#FDF0E3', query: 'rice'),
-  const AppCategory('Mie & Pasta', '🍜', Color(0xFFD96C2C), '#FBEDE4', query: 'noodle'),
-  const AppCategory('Aneka Ayam', '🍗', Color(0xFFC25A2A), '#F9E8E0', query: 'chicken'),
-  const AppCategory('Aneka Seafood', '🦐', Color(0xFF2E9CA6), '#E4F4F6', query: 'seafood'),
-  const AppCategory('Aneka Ikan', '🐟', Color(0xFF3E7CB1), '#E8F1FA', query: 'fish'),
-  const AppCategory('Kue & Pencuci Mulut', '🍰', Color(0xFFB06AB3), '#F4EAF7', query: 'dessert'),
-  const AppCategory('Sayur & Salad', '🥗', Color(0xFF2F9E63), '#E7F5EC', query: 'vegetable'),
-  const AppCategory('Minuman', '🥤', Color(0xFF8C8279), '#F0EBE5', query: 'drink'),
+List<AppCategory> _cats(BuildContext context) => [
+  AppCategory(context.t('cat_rice'), '🍚', Color(0xFFE8842C), '#FDF0E3', query: 'rice'),
+  AppCategory(context.t('cat_noodle'), '🍜', Color(0xFFD96C2C), '#FBEDE4', query: 'noodle'),
+  AppCategory(context.t('cat_chicken'), '🍗', Color(0xFFC25A2A), '#F9E8E0', query: 'chicken'),
+  AppCategory(context.t('cat_seafood'), '🦐', Color(0xFF2E9CA6), '#E4F4F6', query: 'seafood'),
+  AppCategory(context.t('cat_fish'), '🐟', Color(0xFF3E7CB1), '#E8F1FA', query: 'fish'),
+  AppCategory(context.t('cat_dessert'), '🍰', Color(0xFFB06AB3), '#F4EAF7', query: 'dessert'),
+  AppCategory(context.t('cat_veg'), '🥗', Color(0xFF2F9E63), '#E7F5EC', query: 'vegetable'),
+  AppCategory(context.t('cat_drink'), '🥤', Color(0xFF8C8279), '#F0EBE5', query: 'drink'),
 ];

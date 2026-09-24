@@ -1,8 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../i18n/localizations.dart';
 import '../models/meal.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
+
+/// Localized difficulty label (API returns Indonesian values).
+String _diff(BuildContext context, String? d) {
+  switch (d) {
+    case 'Mudah':
+    case 'Easy':
+      return context.t('easy');
+    case 'Sedang':
+    case 'Medium':
+      return context.t('medium');
+    case 'Pedas':
+    case 'Spicy':
+      return context.t('spicy');
+    default:
+      return d ?? context.t('easy');
+  }
+}
 
 class DetailScreen extends StatefulWidget {
   final Meal meal;
@@ -121,8 +139,8 @@ class _DetailScreenState extends State<DetailScreen> {
                                 fontWeight: FontWeight.w700,
                                 color: C.ink)),
                         const SizedBox(width: 6),
-                        const Text('(320 ulasan)',
-                            style: TextStyle(fontSize: 12, color: C.muted)),
+                        Text(context.t('review_count', n: '${m.ratingsCount ?? 320}'),
+                            style: const TextStyle(fontSize: 12, color: C.muted)),
                       ],
                     ],
                   ),
@@ -131,11 +149,12 @@ class _DetailScreenState extends State<DetailScreen> {
                     children: [
                       _MetaPill(
                           icon: Icons.timer_outlined,
-                          label: '${m.minutes ?? 20} Menit'),
+                          label: context.t('minutes', n: '${m.minutes ?? 20}')),
                       _MetaPill(
-                          icon: Icons.speed, label: m.difficulty ?? 'Mudah'),
+                          icon: Icons.speed, label: _diff(context, m.difficulty)),
                       _MetaPill(
-                          icon: Icons.groups_outlined, label: '2 Porsi'),
+                          icon: Icons.groups_outlined,
+                          label: context.t('servings', n: '${m.servings ?? 2}')),
                     ],
                   ),
                   const SizedBox(height: 14),
@@ -150,14 +169,15 @@ class _DetailScreenState extends State<DetailScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        _Nutri(value: '${m.kcal ?? 0}', label: 'kkal'),
+                        _Nutri(value: '${m.kcal ?? 0}', label: context.t('kcal')),
                         const SizedBox(width: 8),
                         _Nutri(
-                            value: '${m.carb ?? 0}g', label: 'karbohidrat'),
+                            value: '${m.carb ?? 0}g', label: context.t('carb')),
                         const SizedBox(width: 8),
-                        _Nutri(value: '${m.protein ?? 0}g', label: 'protein'),
+                        _Nutri(value: '${m.protein ?? 0}g',
+                            label: context.t('protein')),
                         const SizedBox(width: 8),
-                        _Nutri(value: '${m.fat ?? 0}g', label: 'lemak'),
+                        _Nutri(value: '${m.fat ?? 0}g', label: context.t('fat')),
                       ],
                     ),
                   ),
@@ -176,11 +196,11 @@ class _DetailScreenState extends State<DetailScreen> {
                           fontSize: 13.5, fontWeight: FontWeight.w700),
                       unselectedLabelStyle: const TextStyle(
                           fontSize: 13.5, fontWeight: FontWeight.w600),
-                      tabs: const [
-                        Tab(text: 'Bahan'),
-                        Tab(text: 'Langkah Memasak'),
-                        Tab(text: 'Nutrisi'),
-                        Tab(text: 'Penilaian'),
+                      tabs: [
+                        Tab(text: context.t('tab_ing')),
+                        Tab(text: context.t('tab_steps')),
+                        Tab(text: context.t('tab_nutri')),
+                        Tab(text: context.t('tab_reviews')),
                       ],
                     ),
                   ),
@@ -300,15 +320,15 @@ class _IngredientsTab extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       children: [
         if (bumbu.isEmpty)
-          const _GroupHeader('Bahan')
+          _GroupHeader(context.t('ingredients'))
         else ...[
-          const _GroupHeader('Bahan'),
+          _GroupHeader(context.t('ingredients')),
           ...ing.map((i) => _IngRow(
               ing: i,
               listKey: '${meal.id}|${i.name}|${i.measure}',
               checked: st.isListed('${meal.id}|${i.name}|${i.measure}'))),
           const SizedBox(height: 16),
-          const _GroupHeader('Bumbu'),
+          _GroupHeader(context.t('spices')),
           ...bumbu
               .map((i) => _IngRow(
                   ing: i,
@@ -444,10 +464,13 @@ class _NutritionTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final rows = [
-      ('Kalori', '${meal.kcal ?? 0} kkal', Icons.local_fire_department, C.primary),
-      ('Karbohidrat', '${meal.carb ?? 0} g', Icons.restaurant_menu, C.amber),
-      ('Protein', '${meal.protein ?? 0} g', Icons.fitness_center, C.teal),
-      ('Lemak', '${meal.fat ?? 0} g', Icons.water_drop, C.blue),
+      (context.t('nut_kcal'), '${meal.kcal ?? 0} kkal',
+          Icons.local_fire_department, C.primary),
+      (context.t('nut_carb'), '${meal.carb ?? 0} g',
+          Icons.restaurant_menu, C.amber),
+      (context.t('nut_prot'), '${meal.protein ?? 0} g',
+          Icons.fitness_center, C.teal),
+      (context.t('nut_fat'), '${meal.fat ?? 0} g', Icons.water_drop, C.blue),
     ];
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
@@ -494,7 +517,7 @@ class _NutritionTab extends StatelessWidget {
             ),
           ),
         const SizedBox(height: 8),
-        Text('* Nilai per porsi, perkiraan.',
+        Text(context.t('nut_per'),
             style: const TextStyle(fontSize: 11, color: C.muted)),
       ],
     );
@@ -505,15 +528,14 @@ class _ReviewsTab extends StatelessWidget {
   final Meal meal;
   const _ReviewsTab({required this.meal});
 
-  static const _reviews = [
-    ('Sari W.', '4.9', 'Enak banget! Bumbunya pas, anak-anak langsung nambah. Resepnya gampang diikuti, cocok buat pemula.', '2 hari lalu'),
-    ('Budi H.', '4.7', 'Hasilnya mirip restoran. Tips api kecil saat menumis benar-benar ngaruh. Sudah masuk resep langganan.', '1 minggu lalu'),
-    ('Dewi A.', '4.8', 'Wangi bawang putihnya nagih. Saya tambahin sedikit cabai merah, makin pedas manis. Recommended!', '2 minggu lalu'),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final rating = meal.rating ?? 4.8;
+    final reviews = [
+      ('Sari W.', '4.9', context.t('rev_1'), context.t('days_ago')),
+      ('Budi H.', '4.7', context.t('rev_2'), context.t('week_ago')),
+      ('Dewi A.', '4.8', context.t('rev_3'), context.t('weeks_ago')),
+    ];
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       children: [
@@ -542,8 +564,8 @@ class _ReviewsTab extends StatelessWidget {
                       Icon(Icons.star_half, size: 14, color: C.amber),
                     ],
                   ),
-                  const Text('320 ulasan',
-                      style: TextStyle(fontSize: 11, color: C.muted)),
+                  Text(context.t('review_count', n: '320'),
+                      style: const TextStyle(fontSize: 11, color: C.muted)),
                 ],
               ),
               const SizedBox(width: 20),
@@ -556,8 +578,8 @@ class _ReviewsTab extends StatelessWidget {
                         child: Row(
                           children: [
                             Text('$i',
-                                style: const TextStyle(
-                                    fontSize: 11, color: C.muted)),
+                                style:
+                                    const TextStyle(fontSize: 11, color: C.muted)),
                             const SizedBox(width: 6),
                             Expanded(
                               child: ClipRRect(
@@ -581,7 +603,7 @@ class _ReviewsTab extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        for (final rv in _reviews)
+        for (final rv in reviews)
           Container(
             margin: const EdgeInsets.only(bottom: 10),
             padding: const EdgeInsets.all(14),
@@ -656,14 +678,13 @@ class _AddAllButton extends StatelessWidget {
       onPressed: () {
         st.addRecipe(meal);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Bahan ditambahkan ke Daftar Belanja 🛒')),
+          SnackBar(content: Text(context.t('added_snack'))),
         );
       },
       backgroundColor: C.primary,
       foregroundColor: Colors.white,
-      label: const Text('+ Belanja',
-          style: TextStyle(fontWeight: FontWeight.w700)),
+      label: Text(context.t('add_shop'),
+          style: const TextStyle(fontWeight: FontWeight.w700)),
       icon: const Icon(Icons.shopping_bag, size: 18),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'i18n/localizations.dart';
 import 'screens/account_screen.dart';
 import 'screens/favorites_screen.dart';
 import 'screens/home_screen.dart';
@@ -18,8 +19,11 @@ class ResepKuApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => AppState(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => I18N()),
+        ChangeNotifierProvider(create: (_) => AppState()),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'ResepKu',
@@ -56,8 +60,13 @@ class _ShellState extends State<Shell> {
     Icons.account_circle_rounded,
   ];
 
+  static const _tabKeys = ['nav_home', 'nav_search', 'nav_fav', 'nav_shop',
+      'nav_acc'];
+
   @override
   Widget build(BuildContext context) {
+    // Rebuild the nav labels when the language changes.
+    context.watch<I18N>();
     return Scaffold(
       body: IndexedStack(index: _index, children: _tabs),
       bottomNavigationBar: Container(
@@ -79,9 +88,11 @@ class _ShellState extends State<Shell> {
                   onTap: () => setState(() => _index = i),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 220),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
-                      color: active ? C.primarySoft : Colors.transparent,
+                      color:
+                          active ? C.primarySoft : Colors.transparent,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Column(
@@ -91,6 +102,16 @@ class _ShellState extends State<Shell> {
                           _icons[i],
                           size: 22,
                           color: active ? C.primary : C.muted,
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          context.t(_tabKeys[i]),
+                          style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: active
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
+                              color: active ? C.primary : C.muted),
                         ),
                       ],
                     ),

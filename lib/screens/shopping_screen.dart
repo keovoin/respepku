@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../i18n/localizations.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
 
@@ -17,8 +18,8 @@ class ShoppingScreen extends StatelessWidget {
         backgroundColor: C.bg,
         elevation: 0,
         titleSpacing: 20,
-        title: const Text('Daftar Belanja',
-            style: TextStyle(
+        title: Text(context.t('shopping'),
+            style: const TextStyle(
                 fontSize: 18, fontWeight: FontWeight.w800, color: C.ink)),
         actions: [
           if (items.isNotEmpty)
@@ -26,31 +27,32 @@ class ShoppingScreen extends StatelessWidget {
               onPressed: () {
                 st.checkAll();
               },
-              child: const Text('Selesaikan Semua',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+              child: Text(context.t('done_all'),
+                  style:
+                      const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
             ),
           const SizedBox(width: 8),
         ],
       ),
       body: SafeArea(
         child: items.isEmpty
-            ? const Center(
+            ? Center(
                 child: Padding(
-                  padding: EdgeInsets.all(40),
+                  padding: const EdgeInsets.all(40),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('🛒', style: TextStyle(fontSize: 44)),
-                      SizedBox(height: 14),
-                      Text('Daftar belanja kosong',
-                          style: TextStyle(
+                      const Text('🛒', style: TextStyle(fontSize: 44)),
+                      const SizedBox(height: 14),
+                      Text(context.t('shop_empty_t'),
+                          style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
                               color: C.ink)),
-                      SizedBox(height: 6),
-                      Text('Tambahkan bahan dari halaman resep\ndengan tombol “+ Belanja”.',
+                      const SizedBox(height: 6),
+                      Text(context.t('shop_empty_s'),
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: const TextStyle(
                               color: C.muted, fontSize: 13, height: 1.5)),
                     ],
                   ),
@@ -62,10 +64,10 @@ class ShoppingScreen extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
                     child: Row(
                       children: [
-                        const Expanded(
+                        Expanded(
                           child: Text(
-                              'Yuk, belanja bahan buat hari ini',
-                              style: TextStyle(
+                              context.t('shop_sub'),
+                              style: const TextStyle(
                                   fontSize: 12, color: C.muted)),
                         ),
                         Text('$done/${items.length}',

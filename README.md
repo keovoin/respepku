@@ -1,9 +1,9 @@
 # ResepKu 🍜
 
 Aplikasi resep masakan — cari, masak, dan belanja bahan favoritmu.
-Flutter (Android + Web), oranye hangat, semua teks dalam Bahasa Indonesia.
+Flutter (Android + Web), oranye hangat, trilingual: **ខ្មែរ (default) · English · Bahasa Indonesia**.
 
-![UI](docs/ui.png)
+![UI](docs/ui_home.png)
 
 ## Fitur
 
@@ -12,7 +12,7 @@ Flutter (Android + Web), oranye hangat, semua teks dalam Bahasa Indonesia.
 - **Detail Resep** — rating, waktu, tingkat kesulitan, porsi, gizi (kkal/karbo/protein/lemak), tab *Bahan & Bumbu*, *Langkah Memasak*, *Nutrisi*, *Penilaian*
 - **Favorit** — simpan resep dengan ikon hati, filter Mudah/Sedang/Pedas
 - **Daftar Belanja** — ceklis bahan dari halaman resep, progres belanja
-- **Akun** — profil, statistik, progres mingguan, pengaturan
+- **Akun** — profil, statistik, progres mingguan, **pemilih bahasa (ខ្មែរ / English / Bahasa Indonesia)**, pengaturan
 
 ## Sumber data
 
@@ -28,12 +28,19 @@ flutter run                  # perangkat Android
 flutter test                 # smoke test
 ```
 
+## Bahasa (i18n)
+
+Seluruh antarmuka dapat diganti tanpa rebuild: **ភាសាខ្មែរ** (default), **English**, **Bahasa Indonesia** — pilih di tab **Akun → Bahasa**. Pilihan tersimpan (`shared_preferences`) dan bertahan antar sesi.
+
+Implementasi ringan di `lib/i18n/localizations.dart` (ChangeNotifier + `context.t('key')`, ~87 string per bahasa, fallback English). Nama resep/bahan tetap dari API (TheMealDB).
+
 ## Struktur
 
 ```
 lib/
   main.dart              # app shell + bottom nav (5 tab)
   theme.dart             # design tokens (oranye #FF7A00, cream #FBF8F5)
+  i18n/localizations.dart # 3 bahasa + pemilih + persistensi
   models/meal.dart       # Meal, Ingredient, AppCategory
   models/featured.dart   # resep unggulan hand-crafted
   state/app_state.dart   # favorites, shopping list, API client

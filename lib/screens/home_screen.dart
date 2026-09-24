@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../i18n/localizations.dart';
 import '../models/featured.dart';
 import '../models/meal.dart';
 import '../state/app_state.dart';
@@ -75,20 +76,20 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
             child: Row(
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   radius: 20,
                   backgroundColor: C.primarySoft,
-                  child: const Icon(Icons.person, color: C.primary, size: 22),
+                  child: Icon(Icons.person, color: C.primary, size: 22),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Selamat datang 👋',
-                          style: TextStyle(fontSize: 12, color: C.muted)),
-                      Text('Hi, Andi',
-                          style: TextStyle(
+                      Text(context.t('greeting'),
+                          style: const TextStyle(fontSize: 12, color: C.muted)),
+                      Text('${context.t('hi')}, Andi',
+                          style: const TextStyle(
                               fontSize: 19,
                               fontWeight: FontWeight.w800,
                               color: C.ink)),
@@ -99,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     icon: Icons.notifications_outlined,
                     onTap: () =>
                         ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Belum ada notifikasi')))),
+                            SnackBar(content: Text(context.t('no_notifications'))))),
                 _CircleButton(icon: Icons.shopping_bag_outlined,
                     onTap: () =>
                         Navigator.push(context,
@@ -121,12 +122,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: C.line),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
-                    Icon(Icons.search, color: C.muted, size: 20),
-                    SizedBox(width: 10),
-                    Text('Mau masak apa hari ini?',
-                        style: TextStyle(color: C.muted, fontSize: 14)),
+                    const Icon(Icons.search, color: C.muted, size: 20),
+                    const SizedBox(width: 10),
+                    Text(context.t('search_hint'),
+                        style: const TextStyle(color: C.muted, fontSize: 14)),
                   ],
                 ),
               ),
@@ -166,8 +167,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               color: Colors.white.withOpacity(0.22),
                               borderRadius: BorderRadius.circular(20),
                             ),
-                            child: const Text('🔥 Resep Spesial Hari Ini',
-                                style: TextStyle(
+                            child: Text(context.t('featured_badge'),
+                                style: const TextStyle(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w700,
                                     color: Colors.white)),
@@ -197,16 +198,16 @@ class _HomeScreenState extends State<HomeScreen> {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: const Row(
+                            child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text('Masak Sekarang',
-                                    style: TextStyle(
+                                Text(context.t('cook_now'),
+                                    style: const TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w700,
                                         color: C.primaryDark)),
-                                SizedBox(width: 4),
-                                Icon(Icons.arrow_forward,
+                                const SizedBox(width: 4),
+                                const Icon(Icons.arrow_forward,
                                     size: 14, color: C.primaryDark),
                               ],
                             ),
@@ -236,16 +237,16 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           // ---- Categories ----
-          const SectionHeader(title: 'Kategori'),
+          SectionHeader(title: context.t('category')),
           SizedBox(
             height: 92,
             child: ListView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 20),
               children: List.generate(
-                _cats.length,
+                _cats(context).length,
                 (i) {
-                  final cat = _cats[i];
+                  final cat = _cats(context)[i];
                   return Padding(
                     padding: const EdgeInsets.only(right: 10),
                     child: _CategoryChip(cat: cat, onTap: () {
@@ -260,22 +261,23 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           // ---- Popular today ----
-          const SectionHeader(title: 'Populer Hari Ini'),
+          SectionHeader(title: context.t('popular_today')),
           if (!_loaded)
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: [
-                  CircularProgressIndicator(strokeWidth: 2.5, color: C.primary),
-                  SizedBox(width: 10),
-                  Text('Memuat resep…', style: TextStyle(color: C.muted)),
+                  const CircularProgressIndicator(strokeWidth: 2.5, color: C.primary),
+                  const SizedBox(width: 10),
+                  Text(context.t('loading'),
+                      style: const TextStyle(color: C.muted)),
                 ],
               ),
             )
           else if (_failed)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text('Tidak bisa memuat resep. Cek koneksi lalu buka ulang.',
+              child: Text(context.t('load_failed'),
                   style: const TextStyle(color: C.muted)),
             )
           else
@@ -293,7 +295,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           // ---- Continue cooking ----
-          const SectionHeader(title: 'Lanjut Masak'),
+          SectionHeader(title: context.t('continue_cooking')),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: _ContinueCard(meal: featured, onTap: () => _openDetail(featured)),
@@ -304,15 +306,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-final _cats = [
-  AppCategory('Aneka Nasi', '🍚', Color(0xFFE8842C), '#FDF0E3', query: 'rice'),
-  AppCategory('Mie & Pasta', '🍜', Color(0xFFD96C2C), '#FBEDE4', query: 'noodle'),
-  AppCategory('Aneka Ayam', '🍗', Color(0xFFC25A2A), '#F9E8E0', query: 'chicken'),
-  AppCategory('Seafood', '🦐', Color(0xFF2E9CA6), '#E4F4F6', query: 'seafood'),
-  AppCategory('Aneka Ikan', '🐟', Color(0xFF3E7CB1), '#E8F1FA', query: 'fish'),
-  AppCategory('Pencuci Mulut', '🍰', Color(0xFFB06AB3), '#F4EAF7', query: 'dessert'),
-  AppCategory('Sayur', '🥗', Color(0xFF2F9E63), '#E7F5EC', query: 'vegetable'),
-  AppCategory('Minuman', '🥤', Color(0xFF8C8279), '#F0EBE5', query: 'drink'),
+List<AppCategory> _cats(BuildContext context) => [
+  AppCategory(context.t('cat_rice'), '🍚', Color(0xFFE8842C), '#FDF0E3', query: 'rice'),
+  AppCategory(context.t('cat_noodle'), '🍜', Color(0xFFD96C2C), '#FBEDE4', query: 'noodle'),
+  AppCategory(context.t('cat_chicken'), '🍗', Color(0xFFC25A2A), '#F9E8E0', query: 'chicken'),
+  AppCategory(context.t('cat_seafood'), '🦐', Color(0xFF2E9CA6), '#E4F4F6', query: 'seafood'),
+  AppCategory(context.t('cat_fish'), '🐟', Color(0xFF3E7CB1), '#E8F1FA', query: 'fish'),
+  AppCategory(context.t('cat_dessert'), '🍰', Color(0xFFB06AB3), '#F4EAF7', query: 'dessert'),
+  AppCategory(context.t('cat_veg'), '🥗', Color(0xFF2F9E63), '#E7F5EC', query: 'vegetable'),
+  AppCategory(context.t('cat_drink'), '🥤', Color(0xFF8C8279), '#F0EBE5', query: 'drink'),
 ];
 
 class _CategoryChip extends StatelessWidget {
@@ -346,7 +348,7 @@ class _CategoryChip extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             FittedBox(
-              child: Text(cat.name.split(' ').first,
+              child: Text(cat.name,
                   maxLines: 1,
                   style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: C.ink)),
             ),
@@ -383,19 +385,20 @@ class _ContinueCard extends StatelessWidget {
                       Container(color: C.primarySoft)),
             ),
             const SizedBox(width: 12),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Mie Goreng Spesial',
-                      style: TextStyle(
+                  Text(context.t('featured_name'),
+                      style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                           color: C.ink)),
-                  SizedBox(height: 4),
-                  Text('Langkah 3 dari 7', style: TextStyle(fontSize: 12, color: C.muted)),
-                  SizedBox(height: 6),
-                  LinearProgressIndicator(
+                  const SizedBox(height: 4),
+                  Text(context.t('step_of', a: '3', b: '7'),
+                      style: const TextStyle(fontSize: 12, color: C.muted)),
+                  const SizedBox(height: 6),
+                  const LinearProgressIndicator(
                       value: 0.45,
                       minHeight: 6,
                       borderRadius: BorderRadius.all(Radius.circular(4)),

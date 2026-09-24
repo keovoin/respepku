@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../i18n/localizations.dart';
+import '../models/meal.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
@@ -13,36 +15,49 @@ class FavoritesScreen extends StatefulWidget {
 }
 
 class _FavoritesScreenState extends State<FavoritesScreen> {
-  String _filter = 'Semua';
-  final List<String> _filters = ['Semua', 'Mudah', 'Sedang', 'Pedas'];
+  // Filter by i18n key, not by displayed text.
+  String _filterKey = 'all';
+  static const _filterKeys = ['all', 'easy', 'medium', 'spicy'];
+
+  bool _matches(Meal m) {
+    switch (_filterKey) {
+      case 'easy':
+        return m.difficulty == 'Mudah' ||
+            m.difficulty?.toLowerCase() == 'easy';
+      case 'medium':
+        return m.difficulty == 'Sedang' ||
+            m.difficulty?.toLowerCase() == 'medium';
+      case 'spicy':
+        return m.tags?.toLowerCase().contains('spicy') == true ||
+            m.tags?.toLowerCase().contains('pedas') == true ||
+            m.name.toLowerCase().contains('pedas');
+      default:
+        return true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final st = context.watch<AppState>();
     final favs = st.favoriteMeals;
-    final shown = _filter == 'Semua'
-        ? favs
-        : favs
-            .where((m) => (m.difficulty ?? '') == _filter ||
-                (_filter == 'Pedas' && m.name.toLowerCase().contains('pedas')))
-            .toList();
+    final shown = favs.where(_matches).toList();
     return Scaffold(
       backgroundColor: C.bg,
       appBar: AppBar(
         backgroundColor: C.bg,
         elevation: 0,
         titleSpacing: 20,
-        title: const Text('Favorit',
-            style: TextStyle(
+        title: Text(context.t('favorites'),
+            style: const TextStyle(
                 fontSize: 18, fontWeight: FontWeight.w800, color: C.ink)),
       ),
       body: SafeArea(
         child: Column(
           children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(20, 8, 20, 0),
-              child: Text('Resep yang kamu simpan',
-                  style: TextStyle(fontSize: 12, color: C.muted)),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+              child: Text(context.t('fav_sub'),
+                  style: const TextStyle(fontSize: 12, color: C.muted)),
             ),
             const SizedBox(height: 12),
             SizedBox(
@@ -50,13 +65,13 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                children: List.generate(_filters.length, (i) {
-                  final f = _filters[i];
-                  final active = _filter == f;
+                children: List.generate(_filterKeys.length, (i) {
+                  final k = _filterKeys[i];
+                  final active = _filterKey == k;
                   return Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: GestureDetector(
-                      onTap: () => setState(() => _filter = f),
+                      onTap: () => setState(() => _filterKey = k),
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 8),
@@ -66,7 +81,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                           border: Border.all(
                               color: active ? C.primary : C.line),
                         ),
-                        child: Text(f,
+                        child: Text(context.t(k),
                             style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
@@ -106,23 +121,24 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Padding(
-        padding: EdgeInsets.all(40),
+        padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('🤍', style: TextStyle(fontSize: 44)),
-            SizedBox(height: 14),
-            Text('Belum ada resep favorit',
-                style: TextStyle(
+            const Text('🤍', style: TextStyle(fontSize: 44)),
+            const SizedBox(height: 14),
+            Text(context.t('fav_empty_t'),
+                style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: C.ink)),
-            SizedBox(height: 6),
-            Text('Tekan ikon hati pada resep\nuntuk menyimpannya di sini.',
+            const SizedBox(height: 6),
+            Text(context.t('fav_empty_s'),
                 textAlign: TextAlign.center,
-                style: TextStyle(color: C.muted, fontSize: 13, height: 1.5)),
+                style: const TextStyle(
+                    color: C.muted, fontSize: 13, height: 1.5)),
           ],
         ),
       ),
