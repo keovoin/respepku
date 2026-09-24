@@ -63,6 +63,9 @@ class Meal {
   List<Ingredient> get allIngredients =>
       [...ingredients, ...bumbu];
 
+  /// True when the photo ships inside the app (assets/food/*.jpg).
+  bool get isAssetImage => image.startsWith('assets/');
+
   /// Steps: TheMealDB instructions split into lines/sentences.
   List<String> get steps {
     final raw = instructions;
@@ -74,36 +77,6 @@ class Meal {
       ];
     }
     return splitInstructions(raw);
-  }
-
-  /// Builds a Meal from a TheMealDB lookup/search result.
-  factory Meal.fromApi(Map<String, dynamic> j) {
-    final ing = <Ingredient>[];
-    for (var i = 1; i <= 20; i++) {
-      // Note: TheMealDB uses "strIngredient1" (no "s") — "strIngredients1"
-      // always returns null and silently drops every ingredient.
-      final name = (j['strIngredient$i'] ?? '').toString().trim();
-      if (name.isEmpty) continue;
-      final measure = (j['strMeasure$i'] ?? '').toString().trim();
-      ing.add(Ingredient(name, measure));
-    }
-    // Split first 50% of ingredients into "bahan" and rest into "bumbu"
-    // when there's no explicit spice marker — simple heuristic.
-    return Meal(
-      id: (j['idMeal'] ?? '').toString(),
-      name: (j['strMeal'] ?? 'Resep').toString(),
-      image: (j['strMealThumb'] ?? '').toString(),
-      area: (j['strArea'] ?? 'Indonesia').toString(),
-      category: (j['strCategory'] ?? 'Masakan').toString(),
-      tags: (j['strTags'] ?? null)?.toString(),
-      youtube: (j['strYoutube'] ?? null)?.toString(),
-      source: (j['strSource'] ?? null)?.toString(),
-      ingredients: ing,
-      instructions: (j['strInstructions'] ?? '').toString().isEmpty
-          ? null
-          : (j['strInstructions'] as String),
-      isMock: false,
-    );
   }
 
   // ---------- persistence (shared_preferences) ----------

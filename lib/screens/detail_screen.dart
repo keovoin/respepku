@@ -4,6 +4,7 @@ import '../i18n/localizations.dart';
 import '../models/meal.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
+import '../widgets/common.dart';
 
 /// Localized difficulty label (API returns Indonesian values).
 String _diff(BuildContext context, String? d) {
@@ -63,15 +64,7 @@ class _DetailScreenState extends State<DetailScreen> {
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.network(
-                    m.image,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                      color: C.primarySoft,
-                      child: const Icon(Icons.restaurant,
-                          size: 60, color: C.primary),
-                    ),
-                  ),
+                  MealImage(meal: m, fit: BoxFit.cover),
                   const DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(

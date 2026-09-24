@@ -1,4 +1,4 @@
-import '../data/khmer_meals.dart';
+import '../data/local_db.dart';
 import 'meal.dart';
 
 /// Hand-crafted featured recipe: Amok Trey — Cambodia's national dish.
@@ -6,8 +6,7 @@ import 'meal.dart';
 Meal getFeaturedMeal() => const Meal(
       id: '53495',
       name: 'Amok Trey – Cambodian Fish Curry',
-      image:
-          'https://www.themealdb.com/images/media/meals/diuub11782687570.jpg',
+      image: 'assets/food/53495.jpg',
       area: 'Cambodia',
       category: 'Seafood',
       tags: 'Khmer,Coconut,Curry',
@@ -49,5 +48,8 @@ Meal getFeaturedMeal() => const Meal(
       fat: 36,
     );
 
-/// The full offline Khmer collection, led by the featured dish.
-List<Meal> featuredKhmerMeals() => khmerMeals;
+/// The full offline Khmer collection (from the bundled local catalog).
+List<Meal> featuredKhmerMeals() => [
+      for (final m in localMeals)
+        if (m.area == 'Cambodia') m
+    ];

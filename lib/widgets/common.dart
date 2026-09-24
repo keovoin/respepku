@@ -1,8 +1,67 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../data/local_db.dart';
 import '../models/meal.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
+
+/// Recipe photo.
+///
+/// Always reads from the bundled asset catalog (assets/food/*.jpg) —
+/// no network needed. Legacy favorites saved by older app versions may
+/// carry a remote URL; those are re-mapped to the local asset by id.
+class MealImage extends StatelessWidget {
+  final Meal meal;
+  final double? width;
+  final double? height;
+  final BoxFit fit;
+  const MealImage({
+    super.key,
+    required this.meal,
+    this.width,
+    this.height,
+    this.fit = BoxFit.cover,
+  });
+
+  String _path() {
+    if (meal.image.startsWith('assets/')) return meal.image;
+    return localImageFor(meal.id) ?? meal.image;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final path = _path();
+    if (path.startsWith('assets/')) {
+      return Image.asset(
+        path,
+        width: width,
+        height: height,
+        fit: fit,
+        errorBuilder: (_, __, ___) => Container(
+          width: width,
+          height: height,
+          color: C.primarySoft,
+          child: const Icon(Icons.restaurant, color: C.primary),
+        ),
+      );
+    }
+    // Not in the bundled catalog — show a placeholder, never the network.
+    return Container(
+      width: width,
+      height: height,
+      color: C.primarySoft,
+      child: const Icon(Icons.restaurant, color: C.primary),
+    );
+  }
+}
+
+/// Best known bundled photo path for a meal id (null if not bundled).
+String? localImageFor(String id) {
+  for (final m in localMeals) {
+    if (m.id == id) return m.image;
+  }
+  return null;
+}
 
 /// Section heading with optional "Lihat Semua" action.
 class SectionHeader extends StatelessWidget {
@@ -82,16 +141,7 @@ class MealCardH extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(17)),
-                  child: Image.network(
-                    meal.image,
-                    width: 150,
-                    height: 108,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                      color: C.primarySoft,
-                      child: const Icon(Icons.restaurant, size: 34, color: C.primary),
-                    ),
-                  ),
+                  child: MealImage(meal: meal, width: 150, height: 108),
                 ),
                 Positioned(top: 8, right: 8, child: FavButton(meal: meal)),
               ],
@@ -164,15 +214,7 @@ class MealCardRow extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                meal.image,
-                width: 64,
-                height: 64,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
-                    color: C.primarySoft,
-                    child: const Icon(Icons.restaurant, color: C.primary)),
-              ),
+              child: MealImage(meal: meal, width: 64, height: 64),
             ),
             const SizedBox(width: 12),
             Expanded(

@@ -4,6 +4,7 @@ import '../i18n/localizations.dart';
 import '../models/meal.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
+import '../widgets/common.dart';
 import 'detail_screen.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -19,7 +20,6 @@ class _SearchScreenState extends State<SearchScreen> {
   String _activeQuery = '';
   AppCategory? _activeCat;
   List<Meal> _results = [];
-  bool _loading = false;
   bool _searched = false;
 
   @override
@@ -43,15 +43,14 @@ class _SearchScreenState extends State<SearchScreen> {
     final q = _ctrl.text.trim().isEmpty ? _activeQuery : _ctrl.text.trim();
     if (q.isEmpty) return;
     setState(() {
-      _loading = true;
       _searched = true;
       _activeQuery = q;
     });
-    final r = await MealApi.search(q);
+    // Local catalog — instant, no network.
+    final r = MealApi.search(q == kKhmerQuery ? 'khmer cambodian' : q);
     if (!mounted) return;
     setState(() {
       _results = r;
-      _loading = false;
     });
   }
 
@@ -206,10 +205,7 @@ class _SearchScreenState extends State<SearchScreen> {
             ] else ...[
               // ---- Search results ----
               Expanded(
-                child: _loading
-                    ? const Center(
-                        child: CircularProgressIndicator(color: C.primary))
-                    : !_searched
+                child: !_searched
                         ? Center(
                             child: Padding(
                               padding: const EdgeInsets.all(40),
@@ -286,13 +282,7 @@ class _ResultRow extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.network(meal.image,
-                  width: 64,
-                  height: 64,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                      color: C.primarySoft,
-                      child: const Icon(Icons.restaurant, color: C.primary))),
+              child: MealImage(meal: meal, width: 64, height: 64),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -336,6 +326,4 @@ List<AppCategory> _cats(BuildContext context) => [
   AppCategory(context.t('cat_seafood'), '🦐', Color(0xFF2E9CA6), '#E4F4F6', query: 'seafood'),
   AppCategory(context.t('cat_fish'), '🐟', Color(0xFF3E7CB1), '#E8F1FA', query: 'fish'),
   AppCategory(context.t('cat_dessert'), '🍰', Color(0xFFB06AB3), '#F4EAF7', query: 'dessert'),
-  AppCategory(context.t('cat_veg'), '🥗', Color(0xFF2F9E63), '#E7F5EC', query: 'vegetable'),
-  AppCategory(context.t('cat_drink'), '🥤', Color(0xFF8C8279), '#F0EBE5', query: 'drink'),
 ];

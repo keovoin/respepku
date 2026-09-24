@@ -2,15 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../data/khmer_meals.dart';
+import '../data/local_db.dart';
 import '../models/meal.dart';
 
-const kApiBase = 'https://www.themealdb.com/api/json/v1/1';
-
-/// Query that triggers the offline Khmer collection (used by category chips).
+/// Search a local, offline category from the bundled catalog.
 const kKhmerQuery = 'khmer';
 
 class ShoppingItem {
@@ -187,57 +184,44 @@ class AppState extends ChangeNotifier {
   }
 }
 
-/// TheMealDB API client (free, no key).
+/// Local recipe catalog reader.
+///
+/// Everything ships inside the app: 28 real recipes (9 Khmer + world
+/// favorites) with photos in assets/food/. Zero network — the app runs
+/// fully offline. `search` filters the bundled catalog in memory.
 class MealApi {
-  static Future<List<Meal>> search(String query) async {
-    final q = query.trim().toLowerCase();
-    // The offline Khmer collection always ranks first — Khmer food is the
-    // core of this app and must show even when the API is down.
-    final local = _matchesKhmer(q) ? List<Meal>.of(khmerMeals) : const <Meal>[];
-    List<Meal> remote = const [];
-    try {
-      final r = await http
-          .get(Uri.parse('$kApiBase/search.php?s=${Uri.encodeComponent(query)}'))
-          .timeout(const Duration(seconds: 8));
-      if (r.statusCode == 200) {
-        final j = jsonDecode(r.body) as Map<String, dynamic>;
-        final meals = j['meals'];
-        if (meals is List) {
-          remote = meals
-              .map((m) => Meal.fromApi(m as Map<String, dynamic>))
-              .toList();
-        }
-      }
-    } catch (_) {
-      // offline — local results still return below
-    }
-    // Merge: local Khmer first, then remote, de-duped by id.
-    final seen = <String>{for (final m in local) m.id};
-    final all = <Meal>[...local];
-    for (final m in remote) {
-      if (seen.add(m.id)) all.add(m);
-    }
-    return all;
+  static final Map<String, Meal> _byId =
+      {for (final m in localMeals) m.id: m};
+
+  /// All bundled recipes.
+  static List<Meal> all() => List<Meal>.unmodifiable(localMeals);
+
+  /// Khmer dishes from the bundled catalog.
+  static List<Meal> khmer() => all()
+      .where((m) =>
+          m.area == 'Cambodia' ||
+          (m.tags?.toLowerCase().contains('khmer') ?? false) ||
+          m.name.contains('Khmer') ||
+          m.name.contains('Cambodian'))
+      .toList();
+
+  /// In-memory search over name, category, area, tags and ingredients.
+  static List<Meal> search(String rawQuery) {
+    final q = rawQuery.trim().toLowerCase();
+    if (q.isEmpty) return all();
+    final tokens = q.split(RegExp(r'\s+'));
+    return all().where((m) {
+      final hay = [
+        m.name,
+        m.category,
+        m.area,
+        m.tags ?? '',
+        for (final i in m.allIngredients) i.name,
+      ].join(' ').toLowerCase();
+      return tokens.every(hay.contains);
+    }).toList();
   }
 
-  /// Khmer category query, or a real dish name typed by the user.
-  static bool _matchesKhmer(String q) {
-    if (q == kKhmerQuery) return true;
-    const dishNames = [
-      'amok', 'nom banh chok', 'bai sach chrouk', 'samlar kari',
-      'prahok', 'num ansom', 'num e', 'trey chien', 'morning glory',
-    ];
-    return dishNames.any(q.contains);
-  }
-
-  static Future<Meal?> lookup(String id) async {
-    final r = await http.get(Uri.parse('$kApiBase/lookup.php?i=$id'));
-    if (r.statusCode != 200) return null;
-    final j = jsonDecode(r.body) as Map<String, dynamic>;
-    final meals = j['meals'];
-    if (meals is List && meals.isNotEmpty) {
-      return Meal.fromApi(meals.first as Map<String, dynamic>);
-    }
-    return null;
-  }
+  /// Fetch one bundled recipe by id (local, never touches the network).
+  static Meal? lookup(String id) => _byId[id];
 }

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 import '../i18n/localizations.dart';
@@ -30,34 +28,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _load() async {
-    try {
-      final results = await Future.wait([
-        // Khmer dishes lead — they come from the offline collection.
-        MealApi.search('khmer'),
-        MealApi.search('rice'),
-        MealApi.search('chicken'),
-        MealApi.search('noodle'),
-      ]);
-      final seen = <String>{};
-      final popular = <Meal>[];
-      for (final list in results) {
-        for (final m in list) {
-          if (seen.add(m.id) && m.image.isNotEmpty) popular.add(m);
-        }
-      }
-      if (!mounted) return;
-      setState(() {
-        _popular = popular.take(14).toList();
-        _loaded = true;
-        _failed = popular.isEmpty;
-      });
-    } catch (_) {
-      if (!mounted) return;
-      setState(() {
-        _loaded = true;
-        _failed = true;
-      });
-    }
+    // Local catalog only — Khmer dishes first, then the rest of the menu.
+    final popular = [
+      ...MealApi.khmer(),
+      ...MealApi.all().where((m) => !MealApi.khmer().any((k) => k.id == m.id)),
+    ];
+    if (!mounted) return;
+    setState(() {
+      _popular = popular.take(14).toList();
+      _loaded = true;
+      _failed = popular.isEmpty;
+    });
   }
 
   void _openDetail(Meal m) {
@@ -220,18 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(width: 12),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(14),
-                      child: Image.network(
-                        featured.image,
-                        width: 96,
-                        height: 120,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
-                            width: 96,
-                            height: 120,
-                            color: Colors.white24,
-                            child: const Icon(Icons.ramen_dining,
-                                size: 40, color: Colors.white70)),
-                      ),
+                      child: MealImage(meal: featured, width: 96, height: 120),
                     ),
                   ],
                 ),
@@ -317,8 +287,6 @@ List<AppCategory> _cats(BuildContext context) => [
   AppCategory(context.t('cat_seafood'), '🦐', Color(0xFF2E9CA6), '#E4F4F6', query: 'seafood'),
   AppCategory(context.t('cat_fish'), '🐟', Color(0xFF3E7CB1), '#E8F1FA', query: 'fish'),
   AppCategory(context.t('cat_dessert'), '🍰', Color(0xFFB06AB3), '#F4EAF7', query: 'dessert'),
-  AppCategory(context.t('cat_veg'), '🥗', Color(0xFF2F9E63), '#E7F5EC', query: 'vegetable'),
-  AppCategory(context.t('cat_drink'), '🥤', Color(0xFF8C8279), '#F0EBE5', query: 'drink'),
 ];
 
 class _CategoryChip extends StatelessWidget {
@@ -383,10 +351,7 @@ class _ContinueCard extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.network(meal.image,
-                  width: 56, height: 56, fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) =>
-                      Container(color: C.primarySoft)),
+              child: MealImage(meal: meal, width: 56, height: 56),
             ),
             const SizedBox(width: 12),
             Expanded(

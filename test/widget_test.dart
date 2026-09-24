@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sastra_fitmeal/data/khmer_meals.dart';
+import 'package:sastra_fitmeal/data/local_db.dart';
 import 'package:sastra_fitmeal/i18n/localizations.dart';
 import 'package:sastra_fitmeal/main.dart';
 import 'package:sastra_fitmeal/models/featured.dart';
@@ -97,17 +97,39 @@ void main() {
     expect(i2.locale, I18N.en);
   });
 
-  test('offline Khmer collection has 9 dishes, all Cambodian w/ ingredients', () {
-    expect(khmerMeals.length, 9);
-    for (final m in khmerMeals) {
-      expect(m.area, 'Cambodia');
-      expect(m.image, isNotEmpty);
+  test('bundled local catalog: 28 dishes, all with local photos + ingredients', () {
+    expect(localMeals.length, 28);
+    for (final m in localMeals) {
+      expect(m.image, startsWith('assets/food/'),
+          reason: '${m.name} must use a bundled photo');
       expect(m.ingredients, isNotEmpty, reason: '${m.name} needs ingredients');
       expect(m.instructions, isNotNull);
       expect(m.instructions, isNotEmpty);
+      expect(m.steps, isNotEmpty, reason: '${m.name} needs steps');
     }
     // Amok Trey is the national dish and must be present.
-    expect(khmerMeals.any((m) => m.name.contains('Amok Trey')), isTrue);
+    expect(localMeals.any((m) => m.name.contains('Amok Trey')), isTrue);
+  });
+
+  test('local search works offline (no network) for every category', () {
+    expect(MealApi.search('').length, 28);
+    expect(MealApi.khmer().length, greaterThanOrEqualTo(9));
+    for (final m in MealApi.khmer()) {
+      expect(m.area, 'Cambodia');
+    }
+    expect(MealApi.search('rice'), isNotEmpty);
+    expect(MealApi.search('chicken'), isNotEmpty);
+    expect(MealApi.search('noodle'), isNotEmpty);
+    expect(MealApi.search('seafood'), isNotEmpty);
+    expect(MealApi.search('fish'), isNotEmpty);
+    expect(MealApi.search('dessert'), isNotEmpty);
+    // Ingredient-level search.
+    expect(MealApi.search('coconut milk'), isNotEmpty);
+    // Misses return empty, never throw.
+    expect(MealApi.search('zzz_no_such_dish_zzz'), isEmpty);
+    // Lookup by id.
+    expect(MealApi.lookup('53495')?.name, contains('Amok Trey'));
+    expect(MealApi.lookup('nope'), isNull);
   });
 
   test('featured recipe is Khmer (Amok Trey) with bumbu + nutrition', () {
