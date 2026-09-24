@@ -103,6 +103,68 @@ class Meal {
       isMock: false,
     );
   }
+
+  // ---------- persistence (shared_preferences) ----------
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'image': image,
+        'area': area,
+        'category': category,
+        'tags': tags,
+        'youtube': youtube,
+        'source': source,
+        'ingredients':
+            [for (final i in ingredients) [i.name, i.measure]],
+        'instructions': instructions,
+        'rating': rating,
+        'ratingsCount': ratingsCount,
+        'minutes': minutes,
+        'difficulty': difficulty,
+        'servings': servings,
+        'kcal': kcal,
+        'carb': carb,
+        'protein': protein,
+        'fat': fat,
+        'bumbu': [for (final i in bumbu) [i.name, i.measure]],
+        'isMock': isMock,
+      };
+
+  factory Meal.fromJson(Map<String, dynamic> j) => Meal(
+        id: (j['id'] ?? '').toString(),
+        name: (j['name'] ?? 'Resep').toString(),
+        image: (j['image'] ?? '').toString(),
+        area: (j['area'] ?? 'Indonesia').toString(),
+        category: (j['category'] ?? 'Masakan').toString(),
+        tags: j['tags']?.toString(),
+        youtube: j['youtube']?.toString(),
+        source: j['source']?.toString(),
+        ingredients: _ingList(j['ingredients']),
+        instructions: j['instructions']?.toString().isEmpty == true
+            ? null
+            : j['instructions']?.toString(),
+        rating: (j['rating'] as num?)?.toDouble(),
+        ratingsCount: j['ratingsCount'] as int?,
+        minutes: j['minutes'] as int?,
+        difficulty: j['difficulty']?.toString(),
+        servings: j['servings'] as int?,
+        kcal: j['kcal'] as int?,
+        carb: j['carb'] as int?,
+        protein: j['protein'] as int?,
+        fat: j['fat'] as int?,
+        bumbu: _ingList(j['bumbu']),
+        isMock: (j['isMock'] as bool?) ?? false,
+      );
+
+  static List<Ingredient> _ingList(dynamic raw) {
+    if (raw is! List) return const [];
+    return raw
+        .whereType<List>()
+        .where((p) => p.length >= 2)
+        .map((p) =>
+            Ingredient(p[0].toString(), (p[1] ?? '').toString()))
+        .toList();
+  }
 }
 
 /// Splits raw TheMealDB instructions into numbered steps.

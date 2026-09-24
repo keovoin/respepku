@@ -10,19 +10,27 @@ import 'screens/shopping_screen.dart';
 import 'state/app_state.dart';
 import 'theme.dart';
 
-void main() {
-  runApp(const ResepKuApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final i18n = I18N();
+  final app = AppState();
+  await i18n.init();
+  await app.init();
+  runApp(ResepKuApp(i18n: i18n, app: app));
 }
 
 class ResepKuApp extends StatelessWidget {
-  const ResepKuApp({super.key});
+  final I18N i18n;
+  final AppState app;
+
+  const ResepKuApp({super.key, required this.i18n, required this.app});
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => I18N()),
-        ChangeNotifierProvider(create: (_) => AppState()),
+        ChangeNotifierProvider.value(value: i18n),
+        ChangeNotifierProvider.value(value: app),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

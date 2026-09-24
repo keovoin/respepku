@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/meal.dart';
 
@@ -53,6 +54,71 @@ class AppState extends ChangeNotifier {
   final Set<String> _checked = {};
   final Map<String, String> _mealNames = {};
 
+  SharedPreferences? _prefs;
+
+  Future<void> init() async {
+    try {
+      _prefs = await SharedPreferences.getInstance();
+    } catch (_) {
+      _prefs = null; // test/headless — in-memory only
+    }
+    _restore();
+    notifyListeners();
+  }
+
+  void _restore() {
+    final p = _prefs;
+    if (p == null) return;
+    try {
+      final favRaw = p.getString('favorites');
+      if (favRaw != null) {
+        final list = jsonDecode(favRaw) as List;
+        for (final m in list) {
+          final meal = Meal.fromJson(m as Map<String, dynamic>);
+          _favorites[meal.id] = meal;
+        }
+      }
+      final listedRaw = p.getString('shopping_listed');
+      if (listedRaw != null) {
+        for (final k in (jsonDecode(listedRaw) as List)) {
+          _listed.add(k.toString());
+        }
+      }
+      final checkedRaw = p.getString('shopping_checked');
+      if (checkedRaw != null) {
+        for (final k in (jsonDecode(checkedRaw) as List)) {
+          _checked.add(k.toString());
+        }
+      }
+      final namesRaw = p.getString('shopping_names');
+      if (namesRaw != null) {
+        _mealNames.addAll(
+            (jsonDecode(namesRaw) as Map<String, dynamic>).map(
+                (k, v) => MapEntry(k, v.toString())));
+      }
+    } catch (_) {
+      // corrupt data — start fresh
+      _favorites.clear();
+      _listed.clear();
+      _checked.clear();
+    }
+  }
+
+  Future<void> _save() async {
+    final p = _prefs;
+    if (p == null) return;
+    try {
+      await p.setString(
+          'favorites',
+          jsonEncode([for (final m in _favorites.values) m.toJson()]));
+      await p.setString('shopping_listed', jsonEncode(_listed.toList()));
+      await p.setString('shopping_checked', jsonEncode(_checked.toList()));
+      await p.setString('shopping_names', jsonEncode(_mealNames));
+    } catch (_) {
+      // storage failure — keep working in memory
+    }
+  }
+
   double get progress => 0.62; // weekly goal (mock, phase 1)
 
   // ---------- favorites ----------
@@ -67,6 +133,7 @@ class AppState extends ChangeNotifier {
       _favorites.remove(m.id);
     }
     notifyListeners();
+    _save();
   }
 
   // ---------- shopping list ----------
@@ -87,12 +154,14 @@ class AppState extends ChangeNotifier {
     _mealNames[m.id] = m.name;
     _listed.add(key);
     notifyListeners();
+    _save();
   }
 
   void removeIngredient(String key) {
     _listed.remove(key);
     _checked.remove(key);
     notifyListeners();
+    _save();
   }
 
   void addRecipe(Meal m) {
@@ -108,11 +177,20 @@ class AppState extends ChangeNotifier {
   void toggleChecked(String key) {
     if (!_checked.add(key)) _checked.remove(key);
     notifyListeners();
+    _save();
   }
 
   void checkAll() {
     _checked.addAll(_listed);
     notifyListeners();
+    _save();
+  }
+
+  void clearDone() {
+    _listed.removeWhere((k) => _checked.contains(k));
+    _checked.removeWhere((k) => !_listed.contains(k));
+    notifyListeners();
+    _save();
   }
 }
 

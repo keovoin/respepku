@@ -7,9 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// `t('key')` resolves in the active locale, English as fallback.
 /// Placeholders: `{n}`, `{a}`, `{b}`.
 class I18N extends ChangeNotifier {
-  I18N({this.locale = kh}) {
-    _init();
-  }
+  I18N({this.locale = kh});
 
   static const kh = 'kh';
   static const en = 'en';
@@ -19,7 +17,7 @@ class I18N extends ChangeNotifier {
 
   String locale;
 
-  Future<void> _init() async {
+  Future<void> init() async {
     try {
       final p = await SharedPreferences.getInstance();
       final s = p.getString('locale');
