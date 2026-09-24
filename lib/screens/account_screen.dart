@@ -54,13 +54,13 @@ class AccountScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Andi Pratama',
+                        Text('Sastra Digital Innovation',
                             style: TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.w800,
                                 color: Colors.white)),
                         SizedBox(height: 3),
-                        Text('andi.pratama@mail.com',
+                        Text('sastra@sastra.dev',
                             style: TextStyle(
                                 fontSize: 12, color: Colors.white70)),
                       ],

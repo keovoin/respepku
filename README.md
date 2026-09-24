@@ -1,4 +1,4 @@
-# ResepKu 🍜
+# Sastra Fitmeal 🍜
 
 Aplikasi resep masakan — cari, masak, dan belanja bahan favoritmu.
 Flutter (Android + Web), oranye hangat, trilingual: **ខ្មែរ (default) · English · Bahasa Indonesia**.
@@ -64,4 +64,4 @@ lib/
 ## Kredit
 
 UI design pattern: [abuanwar072/Recipe-App-Flutter-UI](https://github.com/abuanwar072/Recipe-App---Flutter-UI).
-Logo & branding: ResepKu (Sastra Digital Innovation).
+Logo & branding: Sastra Fitmeal (Sastra Digital Innovation).

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// ResepKu design tokens — warm orange accent, cream background.
+/// Sastra Fitmeal design tokens — warm orange accent, cream background.
 class C {
   static const primary = Color(0xFFFF7A00);
   static const primaryDark = Color(0xFFE06300);

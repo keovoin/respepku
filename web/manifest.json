@@ -1,11 +1,11 @@
 {
-    "name": "respepku",
-    "short_name": "respepku",
+    "name": "Sastra Fitmeal",
+    "short_name": "Fitmeal",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#FBF8F5",
+    "theme_color": "#FF7A00",
+    "description": "Khmer & world recipes - find, cook and track your favorite meals.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

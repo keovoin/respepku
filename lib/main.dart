@@ -16,14 +16,14 @@ Future<void> main() async {
   final app = AppState();
   await i18n.init();
   await app.init();
-  runApp(ResepKuApp(i18n: i18n, app: app));
+  runApp(SastraFitmealApp(i18n: i18n, app: app));
 }
 
-class ResepKuApp extends StatelessWidget {
+class SastraFitmealApp extends StatelessWidget {
   final I18N i18n;
   final AppState app;
 
-  const ResepKuApp({super.key, required this.i18n, required this.app});
+  const SastraFitmealApp({super.key, required this.i18n, required this.app});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +34,7 @@ class ResepKuApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'ResepKu',
+        title: 'Sastra Fitmeal',
         theme: appTheme(),
         home: const Shell(),
       ),

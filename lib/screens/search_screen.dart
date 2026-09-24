@@ -328,6 +328,8 @@ class _ResultRow extends StatelessWidget {
 }
 
 List<AppCategory> _cats(BuildContext context) => [
+  AppCategory(context.t('cat_khmer'), '🍛', Color(0xFFD94F30), '#FDEDE8',
+      query: 'khmer'),
   AppCategory(context.t('cat_rice'), '🍚', Color(0xFFE8842C), '#FDF0E3', query: 'rice'),
   AppCategory(context.t('cat_noodle'), '🍜', Color(0xFFD96C2C), '#FBEDE4', query: 'noodle'),
   AppCategory(context.t('cat_chicken'), '🍗', Color(0xFFC25A2A), '#F9E8E0', query: 'chicken'),

@@ -5,20 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../data/khmer_meals.dart';
 import '../models/meal.dart';
 
 const kApiBase = 'https://www.themealdb.com/api/json/v1/1';
 
-const List<AppCategory> kCategories = [
-  AppCategory('Aneka Nasi', '🍚', Color(0xFFE8842C), '#FDF0E3', query: 'rice'),
-  AppCategory('Mie & Pasta', '🍜', Color(0xFFD96C2C), '#FBEDE4', query: 'noodle'),
-  AppCategory('Aneka Ayam', '🍗', Color(0xFFC25A2A), '#F9E8E0', query: 'chicken'),
-  AppCategory('Aneka Seafood', '🦐', Color(0xFF2E9CA6), '#E4F4F6', query: 'seafood'),
-  AppCategory('Aneka Ikan', '🐟', Color(0xFF3E7CB1), '#E8F1FA', query: 'fish'),
-  AppCategory('Kue & Pencuci Mulut', '🍰', Color(0xFFB06AB3), '#F4EAF7', query: 'dessert'),
-  AppCategory('Sayur & Salad', '🥗', Color(0xFF2F9E63), '#E7F5EC', query: 'vegetable'),
-  AppCategory('Minuman', '🥤', Color(0xFF8C8279), '#F0EBE5', query: 'drink'),
-];
+/// Query that triggers the offline Khmer collection (used by category chips).
+const kKhmerQuery = 'khmer';
 
 class ShoppingItem {
   final String key;
@@ -197,15 +190,44 @@ class AppState extends ChangeNotifier {
 /// TheMealDB API client (free, no key).
 class MealApi {
   static Future<List<Meal>> search(String query) async {
-    final r = await http.get(
-        Uri.parse('$kApiBase/search.php?s=${Uri.encodeComponent(query)}'));
-    if (r.statusCode != 200) return const [];
-    final j = jsonDecode(r.body) as Map<String, dynamic>;
-    final meals = j['meals'];
-    if (meals == null) return const [];
-    return (meals as List)
-        .map((m) => Meal.fromApi(m as Map<String, dynamic>))
-        .toList();
+    final q = query.trim().toLowerCase();
+    // The offline Khmer collection always ranks first — Khmer food is the
+    // core of this app and must show even when the API is down.
+    final local = _matchesKhmer(q) ? List<Meal>.of(khmerMeals) : const <Meal>[];
+    List<Meal> remote = const [];
+    try {
+      final r = await http
+          .get(Uri.parse('$kApiBase/search.php?s=${Uri.encodeComponent(query)}'))
+          .timeout(const Duration(seconds: 8));
+      if (r.statusCode == 200) {
+        final j = jsonDecode(r.body) as Map<String, dynamic>;
+        final meals = j['meals'];
+        if (meals is List) {
+          remote = meals
+              .map((m) => Meal.fromApi(m as Map<String, dynamic>))
+              .toList();
+        }
+      }
+    } catch (_) {
+      // offline — local results still return below
+    }
+    // Merge: local Khmer first, then remote, de-duped by id.
+    final seen = <String>{for (final m in local) m.id};
+    final all = <Meal>[...local];
+    for (final m in remote) {
+      if (seen.add(m.id)) all.add(m);
+    }
+    return all;
+  }
+
+  /// Khmer category query, or a real dish name typed by the user.
+  static bool _matchesKhmer(String q) {
+    if (q == kKhmerQuery) return true;
+    const dishNames = [
+      'amok', 'nom banh chok', 'bai sach chrouk', 'samlar kari',
+      'prahok', 'num ansom', 'num e', 'trey chien', 'morning glory',
+    ];
+    return dishNames.any(q.contains);
   }
 
   static Future<Meal?> lookup(String id) async {

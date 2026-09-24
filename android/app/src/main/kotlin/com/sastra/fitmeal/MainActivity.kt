@@ -1,4 +1,4 @@
-package com.sastra.respepku
+package com.sastra.fitmeal
 
 import io.flutter.embedding.android.FlutterActivity
 

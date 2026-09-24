@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Lightweight in-app i18n: Khmer (default), English, Indonesian.
+/// Lightweight in-app i18n: Khmer (default), English.
 ///
 /// `t('key')` resolves in the active locale, English as fallback.
 /// Placeholders: `{n}`, `{a}`, `{b}`.
@@ -11,9 +11,8 @@ class I18N extends ChangeNotifier {
 
   static const kh = 'kh';
   static const en = 'en';
-  static const id = 'id';
 
-  static const _label = {kh: 'ភាសាខ្មែរ', en: 'English', id: 'Bahasa Indonesia'};
+  static const _label = {kh: 'ភាសាខ្មែរ', en: 'English'};
 
   String locale;
 
@@ -41,7 +40,7 @@ class I18N extends ChangeNotifier {
 
   String label(String l) => _label[l] ?? l;
 
-  static const List<String> locales = [kh, en, id];
+  static const List<String> locales = [kh, en];
 
   String t(String key, {String? n, String? a, String? b}) {
     final d = _tr[locale] ?? _tr[en]!;
@@ -65,7 +64,7 @@ class I18N extends ChangeNotifier {
       'search_hint': 'ចង់ចម្អិនអ្វីថ្ងៃនេះ?',
       'featured_badge': '🔥 រូបមន្តពិសេសថ្ងៃនេះ',
       'cook_now': 'ចម្អិនឥឡូវនេះ',
-      'featured_name': 'មីឆ្ងាញ់ពិសេស',
+      'featured_name': 'អាម៉ុកត្រី',
       'category': 'ប្រភេទ',
       'popular_today': 'ពេញនិយមថ្ងៃនេះ',
       'continue_cooking': 'បន្តចម្អិន',
@@ -148,6 +147,7 @@ class I18N extends ChangeNotifier {
       'cat_dessert': 'អាហារផ្អែម',
       'cat_veg': 'បន្លែ',
       'cat_drink': 'ភេសជ្ជៈ',
+      'cat_khmer': 'មុខម្ហូបខ្មែរ',
     },
     // ---------------- English ----------------
     en: {
@@ -161,7 +161,7 @@ class I18N extends ChangeNotifier {
       'search_hint': 'What would you like to cook today?',
       'featured_badge': '🔥 Special Recipe Today',
       'cook_now': 'Cook Now',
-      'featured_name': 'Special Fried Noodles',
+      'featured_name': 'Amok Trey',
       'category': 'Categories',
       'popular_today': 'Popular Today',
       'continue_cooking': 'Continue Cooking',
@@ -175,7 +175,7 @@ class I18N extends ChangeNotifier {
       'search_results': 'Search Results',
       'search_ph': 'Food, ingredient, category…',
       'empty_search':
-          'Type a food, ingredient, or category.\nE.g.: fish, rice, dessert…',
+          'Type a food, ingredient, or category.\nE.g.: amok, fish, rice…',
       'no_results': 'No results for',
       'favorites': 'Favorites',
       'fav_sub': 'Your saved recipes',
@@ -243,103 +243,8 @@ class I18N extends ChangeNotifier {
       'cat_dessert': 'Desserts',
       'cat_veg': 'Vegetables',
       'cat_drink': 'Drinks',
-    },
-    // ---------------- Indonesian ----------------
-    id: {
-      'nav_home': 'Beranda',
-      'nav_search': 'Cari',
-      'nav_fav': 'Favorit',
-      'nav_shop': 'Belanja',
-      'nav_acc': 'Akun',
-      'greeting': 'Selamat datang 👋',
-      'hi': 'Hi',
-      'search_hint': 'Mau masak apa hari ini?',
-      'featured_badge': '🔥 Resep Spesial Hari Ini',
-      'cook_now': 'Masak Sekarang',
-      'featured_name': 'Mie Goreng Spesial',
-      'category': 'Kategori',
-      'popular_today': 'Populer Hari Ini',
-      'continue_cooking': 'Lanjut Masak',
-      'step_of': 'Langkah {a} dari {b}',
-      'loading': 'Memuat resep…',
-      'load_failed': 'Tidak bisa memuat resep. Cek koneksi lalu coba lagi.',
-      'no_notifications': 'Belum ada notifikasi',
-      'see_all': 'Lihat Semua',
-      'min_short': '{n} mnt',
-      'search': 'Cari',
-      'search_results': 'Hasil Pencarian',
-      'search_ph': 'Makanan, bahan, kategori…',
-      'empty_search':
-          'Ketik nama makanan, bahan, atau kategori.\nContoh: ikan, nasi, kue…',
-      'no_results': 'Tidak ada hasil untuk',
-      'favorites': 'Favorit',
-      'fav_sub': 'Resep yang kamu simpan',
-      'all': 'Semua',
-      'easy': 'Mudah',
-      'medium': 'Sedang',
-      'spicy': 'Pedas',
-      'fav_empty_t': 'Belum ada resep favorit',
-      'fav_empty_s': 'Tekan ikon hati pada resep\nuntuk menyimpannya di sini.',
-      'review_count': '({n} ulasan)',
-      'minutes': '{n} Menit',
-      'servings': '{n} Porsi',
-      'kcal': 'kkal',
-      'carb': 'karbohidrat',
-      'protein': 'protein',
-      'fat': 'lemak',
-      'tab_ing': 'Bahan',
-      'tab_steps': 'Langkah Memasak',
-      'tab_nutri': 'Nutrisi',
-      'tab_reviews': 'Penilaian',
-      'ingredients': 'Bahan',
-      'spices': 'Bumbu',
-      'nut_kcal': 'Kalori',
-      'nut_carb': 'Karbohidrat',
-      'nut_prot': 'Protein',
-      'nut_fat': 'Lemak',
-      'nut_per': '* Nilai per porsi, perkiraan.',
-      'added_snack': 'Bahan ditambahkan ke Daftar Belanja 🛒',
-      'add_shop': '+ Belanja',
-      'shopping': 'Daftar Belanja',
-      'done_all': 'Selesaikan Semua',
-      'shop_empty_t': 'Daftar belanja kosong',
-      'shop_empty_s':
-          'Tambahkan bahan dari halaman resep\ndengan tombol «+ Belanja».',
-      'shop_sub': 'Yuk, belanja bahan buat hari ini',
-      'account': 'Akun Saya',
-      'stat_recipes': 'Resep',
-      'stat_shop': 'Belanja',
-      'stat_goal': 'Target',
-      'weekly': 'Progres Mingguan',
-      'weekly_sub': 'Masak 4 dari 6 resep sehat minggu ini',
-      'm_notif': 'Notifikasi',
-      'm_history': 'Riwayat Masak',
-      'm_downloads': 'Unduhan',
-      'm_help': 'Bantuan & Pusat Dukungan',
-      'm_privacy': 'Privasi & Kebijakan',
-      'm_rate': 'Beri Nilai Aplikasi',
-      'm_logout': 'Keluar dari Akun',
-      'coming_soon': 'segera hadir',
-      'days_ago': '2 hari lalu',
-      'week_ago': '1 minggu lalu',
-      'weeks_ago': '2 minggu lalu',
-      'rev_1':
-          'Enak banget! Bumbunya pas, anak-anak nambah terus. Resepnya gampang diikuti, cocok buat pemula.',
-      'rev_2':
-          'Hasilnya mirip restoran. Tips api kecil saat masak benar-benar membantu. Sekarang jadi resep langganan keluarga.',
-      'rev_3':
-          'Wangi bawang putihnya mantap. Saya tambah cabai merah sedikit — pedas manis. Recommended!',
-      'lang_title': 'Bahasa',
-      'cat_rice': 'Aneka Nasi',
-      'cat_noodle': 'Mie & Pasta',
-      'cat_chicken': 'Aneka Ayam',
-      'cat_seafood': 'Aneka Seafood',
-      'cat_fish': 'Aneka Ikan',
-      'cat_dessert': 'Kue & Pencuci Mulut',
-      'cat_veg': 'Sayur & Salad',
-      'cat_drink': 'Minuman',
-    },
-  };
+      'cat_khmer': 'Khmer Food',
+    },  };
 }
 
 /// Convenience: `context.t('key')`.

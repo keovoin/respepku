@@ -32,6 +32,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _load() async {
     try {
       final results = await Future.wait([
+        // Khmer dishes lead — they come from the offline collection.
+        MealApi.search('khmer'),
         MealApi.search('rice'),
         MealApi.search('chicken'),
         MealApi.search('noodle'),
@@ -45,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
       if (!mounted) return;
       setState(() {
-        _popular = popular.take(12).toList();
+        _popular = popular.take(14).toList();
         _loaded = true;
         _failed = popular.isEmpty;
       });
@@ -88,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Text(context.t('greeting'),
                           style: const TextStyle(fontSize: 12, color: C.muted)),
-                      Text('${context.t('hi')}, Andi',
+                      Text('${context.t('hi')}, Sastra',
                           style: const TextStyle(
                               fontSize: 19,
                               fontWeight: FontWeight.w800,
@@ -307,6 +309,8 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 List<AppCategory> _cats(BuildContext context) => [
+  AppCategory(context.t('cat_khmer'), '🍛', Color(0xFFD94F30), '#FDEDE8',
+      query: 'khmer'),
   AppCategory(context.t('cat_rice'), '🍚', Color(0xFFE8842C), '#FDF0E3', query: 'rice'),
   AppCategory(context.t('cat_noodle'), '🍜', Color(0xFFD96C2C), '#FBEDE4', query: 'noodle'),
   AppCategory(context.t('cat_chicken'), '🍗', Color(0xFFC25A2A), '#F9E8E0', query: 'chicken'),

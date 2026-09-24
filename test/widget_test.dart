@@ -1,10 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:respepku/i18n/localizations.dart';
-import 'package:respepku/main.dart';
-import 'package:respepku/models/meal.dart';
-import 'package:respepku/state/app_state.dart';
+import 'package:sastra_fitmeal/data/khmer_meals.dart';
+import 'package:sastra_fitmeal/i18n/localizations.dart';
+import 'package:sastra_fitmeal/main.dart';
+import 'package:sastra_fitmeal/models/featured.dart';
+import 'package:sastra_fitmeal/models/meal.dart';
+import 'package:sastra_fitmeal/state/app_state.dart';
 
 Future<void> boot(WidgetTester tester) async {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -13,7 +15,7 @@ Future<void> boot(WidgetTester tester) async {
   final app = AppState();
   await i18n.init();
   await app.init();
-  await tester.pumpWidget(ResepKuApp(i18n: i18n, app: app));
+  await tester.pumpWidget(SastraFitmealApp(i18n: i18n, app: app));
   await tester.pump(const Duration(seconds: 2));
 }
 
@@ -93,5 +95,28 @@ void main() {
     final i2 = I18N();
     await i2.init();
     expect(i2.locale, I18N.en);
+  });
+
+  test('offline Khmer collection has 9 dishes, all Cambodian w/ ingredients', () {
+    expect(khmerMeals.length, 9);
+    for (final m in khmerMeals) {
+      expect(m.area, 'Cambodia');
+      expect(m.image, isNotEmpty);
+      expect(m.ingredients, isNotEmpty, reason: '${m.name} needs ingredients');
+      expect(m.instructions, isNotNull);
+      expect(m.instructions, isNotEmpty);
+    }
+    // Amok Trey is the national dish and must be present.
+    expect(khmerMeals.any((m) => m.name.contains('Amok Trey')), isTrue);
+  });
+
+  test('featured recipe is Khmer (Amok Trey) with bumbu + nutrition', () {
+    final f = getFeaturedMeal();
+    expect(f.name.contains('Amok Trey'), isTrue);
+    expect(f.area, 'Cambodia');
+    expect(f.ingredients, isNotEmpty);
+    expect(f.bumbu, isNotEmpty);
+    expect(f.kcal, greaterThan(0));
+    expect(f.steps, isNotEmpty);
   });
 }

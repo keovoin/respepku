@@ -79,8 +79,10 @@ class Meal {
   /// Builds a Meal from a TheMealDB lookup/search result.
   factory Meal.fromApi(Map<String, dynamic> j) {
     final ing = <Ingredient>[];
-    for (var i = 0; i < 20; i++) {
-      final name = (j['strIngredients$i'] ?? '').toString().trim();
+    for (var i = 1; i <= 20; i++) {
+      // Note: TheMealDB uses "strIngredient1" (no "s") — "strIngredients1"
+      // always returns null and silently drops every ingredient.
+      final name = (j['strIngredient$i'] ?? '').toString().trim();
       if (name.isEmpty) continue;
       final measure = (j['strMeasure$i'] ?? '').toString().trim();
       ing.add(Ingredient(name, measure));
