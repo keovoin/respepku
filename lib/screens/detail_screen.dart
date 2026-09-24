@@ -312,14 +312,12 @@ class _IngredientsTab extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       children: [
-        if (bumbu.isEmpty)
-          _GroupHeader(context.t('ingredients'))
-        else ...[
-          _GroupHeader(context.t('ingredients')),
-          ...ing.map((i) => _IngRow(
-              ing: i,
-              listKey: '${meal.id}|${i.name}|${i.measure}',
-              checked: st.isListed('${meal.id}|${i.name}|${i.measure}'))),
+        _GroupHeader(context.t('ingredients')),
+        ...ing.map((i) => _IngRow(
+            ing: i,
+            listKey: '${meal.id}|${i.name}|${i.measure}',
+            checked: st.isListed('${meal.id}|${i.name}|${i.measure}'))),
+        if (bumbu.isNotEmpty) ...[
           const SizedBox(height: 16),
           _GroupHeader(context.t('spices')),
           ...bumbu
