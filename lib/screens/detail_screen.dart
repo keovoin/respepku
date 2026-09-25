@@ -89,7 +89,7 @@ class _DetailScreenState extends State<DetailScreen> {
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -103,7 +103,7 @@ class _DetailScreenState extends State<DetailScreen> {
                               fontSize: 22,
                               fontWeight: FontWeight.w800,
                               color: C.ink,
-                              height: 1.25),
+                              height: 1.6),
                         ),
                       ),
                       GestureDetector(
@@ -140,6 +140,8 @@ class _DetailScreenState extends State<DetailScreen> {
                         Text(context.t('review_count', n: '${m.ratingsCount ?? 320}'),
                             style: const TextStyle(height: 1.4, fontSize: 12, color: C.muted)),
                       ],
+                      const Spacer(),
+                      _CookedChip(meal: m),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -196,19 +198,24 @@ class _DetailScreenState extends State<DetailScreen> {
                       border: Border.all(color: C.line),
                     ),
                     child: TabBar(
+                      isScrollable: true,
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
                       labelColor: C.primary,
                       unselectedLabelColor: C.muted,
                       indicatorColor: C.primary,
-                      labelStyle: const TextStyle(height: 1.4, 
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      dividerColor: Colors.transparent,
+                      tabAlignment: TabAlignment.start,
+                      labelStyle: const TextStyle(height: 1.6,
                           fontSize: 13.5, fontWeight: FontWeight.w700),
-                      unselectedLabelStyle: const TextStyle(height: 1.4, 
+                      unselectedLabelStyle: const TextStyle(height: 1.6,
                           fontSize: 13.5, fontWeight: FontWeight.w600),
                       tabs: [
-                        Tab(text: context.t('tab_ing')),
-                        Tab(text: context.t('tab_steps')),
-                        Tab(text: context.t('tab_nutri')),
-                        Tab(text: context.t('tab_reviews')),
-                        if (shop.loaded) Tab(text: context.t('tab_buy')),
+                        Tab(height: 52, text: context.t('tab_ing')),
+                        Tab(height: 52, text: context.t('tab_steps')),
+                        Tab(height: 52, text: context.t('tab_nutri')),
+                        Tab(height: 52, text: context.t('tab_reviews')),
+                        if (shop.loaded) Tab(height: 52, text: context.t('tab_buy')),
                       ],
                     ),
                   ),
@@ -288,9 +295,52 @@ class _MetaPill extends StatelessWidget {
           Icon(icon, size: 16, color: C.primary),
           const SizedBox(width: 6),
           Text(label,
-              style: const TextStyle(height: 1.4, 
+              style: const TextStyle(height: 1.6, 
                   fontSize: 13, fontWeight: FontWeight.w600, color: C.ink)),
         ],
+      ),
+    );
+  }
+}
+
+/// Toggle: "I cooked this recipe" — feeds the weekly-goal progress bar.
+class _CookedChip extends StatelessWidget {
+  final Meal meal;
+  const _CookedChip({required this.meal});
+
+  @override
+  Widget build(BuildContext context) {
+    final st = context.watch<AppState>();
+    final done = st.isCooked(meal.id);
+    return GestureDetector(
+      onTap: () {
+        st.toggleCooked(meal.id);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            duration: const Duration(seconds: 1),
+            content: Text(context.t('cooked_ok'))));
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: done ? C.greenSoft : C.card,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: done ? C.green : C.line),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(done ? Icons.check_circle : Icons.sunny_snowing,
+                size: 16, color: done ? C.green : C.muted),
+            const SizedBox(width: 6),
+            Text(context.t('mark_cooked'),
+                style: TextStyle(
+                    height: 1.4,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: done ? C.green : C.muted)),
+          ],
+        ),
       ),
     );
   }
@@ -326,7 +376,7 @@ class _IngredientsTab extends StatelessWidget {
     final ing = meal.ingredientsIn(kh);
     final bumbu = kh ? <Ingredient>[] : meal.bumbu;
     return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 96),
       children: [
         _GroupHeader(context.t('ingredients')),
         ...ing.map((i) => _IngRow(
@@ -423,7 +473,7 @@ class _StepsTab extends StatelessWidget {
     final kh = context.useKhmer;
     final steps = meal.stepsIn(kh);
     return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
       itemCount: steps.length,
       separatorBuilder: (_, __) => const SizedBox(height: 12),
       itemBuilder: (_, i) {
@@ -482,7 +532,7 @@ class _NutritionTab extends StatelessWidget {
       (context.t('nut_fat'), '${meal.fat ?? 0} g', Icons.water_drop, C.blue),
     ];
     return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
       children: [
         for (final r in rows)
           Container(
@@ -550,7 +600,7 @@ class _ReviewsTab extends StatelessWidget {
           context.t('weeks_ago')),
     ];
     return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
       children: [
         Container(
           padding: const EdgeInsets.all(16),
@@ -728,7 +778,7 @@ class _BuyTab extends StatelessWidget {
     }
     final qty = shop.cartQty(set.id);
     return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
       children: [
         Container(
           padding: const EdgeInsets.all(14),

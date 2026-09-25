@@ -49,3 +49,6 @@ app.*.map.json
 
 # Admin passcode — local only, never commit
 docs/admin/credentials.json
+
+# agent scratch archives (local only)
+_agent_archive/

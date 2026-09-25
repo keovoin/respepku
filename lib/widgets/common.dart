@@ -317,7 +317,7 @@ class ShopBannerCarousel extends StatelessWidget {
       height: 116,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
         itemCount: banners.length,
         separatorBuilder: (_, __) => const SizedBox(width: 10),
         itemBuilder: (context, i) => _BannerCard(banner: banners[i]),

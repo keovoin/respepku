@@ -15,6 +15,21 @@ import 'package:sastra_fitmeal/screens/search_screen.dart';
 import 'package:sastra_fitmeal/screens/shopping_screen.dart';
 import 'package:sastra_fitmeal/state/app_state.dart';
 import 'package:sastra_fitmeal/state/shop_state.dart';
+import 'dart:io';
+
+/// Current Khmer UI label from the i18n table (avoid hardcoded spellings).
+String khLabel(String key) => _khStrings()[key]!;
+
+Map<String, String> _khStrings() {
+  final src = File('lib/i18n/localizations.dart').readAsStringSync();
+  final kh = src.substring(src.indexOf('kh: {'), src.indexOf('en: {'));
+  final out = <String, String>{};
+  for (final m in RegExp(r"'([a-z0-9_]+)':\s*'((?:[^'\\]|\\.)*)'").allMatches(kh)) {
+    out[m.group(1)!] = m.group(2)!.replaceAll('\\n', String.fromCharCode(10));
+  }
+  return out;
+}
+
 
 Future<void> boot(WidgetTester tester) async {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -161,7 +176,7 @@ void main() {
 
   test('meal locale accessors: Khmer names + English fallback', () {
     final m = MealApi.lookup('53495')!; // Amok Trey
-    expect(m.nameIn(true), contains('អំបុកត្រី'));
+    expect(m.nameIn(true), contains('អាម៉ុកត្រី'));
     expect(m.nameIn(false), contains('Amok Trey'));
     expect(m.ingredientsIn(true).first.name, m.localeData!.ingredients[0][0]);
     expect(m.ingredientsIn(false).first.name, m.ingredients.first.name);
@@ -206,7 +221,7 @@ void main() {
     await bootScreen(tester, const HomeScreen());
     expect(find.text('ជំរាបសួរ 👋'), findsOneWidget);
     // Featured banner + popular row show the Khmer name of Amok Trey.
-    expect(find.textContaining('អំបុកត្រី'), findsWidgets);
+    expect(find.textContaining('អាម៉ុកត្រី'), findsWidgets);
     expect(tester.takeException(), isNull);
   });
 
@@ -221,7 +236,7 @@ void main() {
     await tester.pump();
     // Local catalog has fish dishes (Amok Trey, Fish Amok, Samlor Prah,
     // Seafood Curry...) — result rows must appear (Khmer names now).
-    expect(find.textContaining('អំបុកត្រី'), findsWidgets);
+    expect(find.textContaining('អាម៉ុកត្រី'), findsWidgets);
     expect(tester.takeException(), isNull);
   });
 
@@ -240,15 +255,15 @@ void main() {
     // First tab: Khmer ingredient names show real items.
     expect(find.textContaining(m.localeData!.ingredients[0][0]), findsWidgets);
     // Switch to steps tab.
-    await tester.tap(find.text('ជំហានចម្អិន').first);
+    await tester.tap(find.text(khLabel('tab_steps')).first);
     await tester.pumpAndSettle();
     expect(find.text(m.stepsIn(true).first), findsOneWidget);
     // Switch to nutrition tab: kcal / carb / protein / fat rows.
-    await tester.tap(find.text('សារៈប្រាណ').first);
+    await tester.tap(find.text(khLabel('tab_nutri')).first);
     await tester.pumpAndSettle();
     expect(find.textContaining('kkal'), findsOneWidget);
     // Switch to reviews tab: Khmer reviewer names.
-    await tester.tap(find.text('ការវាយតម្លៃ').first);
+    await tester.tap(find.text(khLabel('tab_reviews')).first);
     await tester.pumpAndSettle();
     expect(find.text('សុភា ឃ.'), findsOneWidget);
     expect(tester.takeException(), isNull);
@@ -341,14 +356,14 @@ void main() {
     );
     await tester.pump(const Duration(milliseconds: 300));
     // Items from Amok Trey are listed with the Khmer meal name.
-    expect(find.textContaining('អំបុកត្រី'), findsWidgets);
+    expect(find.textContaining('អាម៉ុកត្រី'), findsWidgets);
     expect(find.textContaining('0/'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
   testWidgets('account screen: profile, stats, language list', (tester) async {
     await bootScreen(tester, const AccountScreen());
-    expect(find.text('Sastra Digital Innovation'), findsOneWidget);
+    expect(find.text('Sastra Fitmeal'), findsOneWidget);
     expect(find.textContaining('ខ្មែរ'), findsOneWidget);
     expect(find.text('English'), findsOneWidget);
     expect(tester.takeException(), isNull);

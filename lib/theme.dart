@@ -35,18 +35,23 @@ TextStyle khmerSafe({
 const double kKhmerMinSize = 12;
 
 ThemeData appTheme() {
+  const khFont = 'NotoSansKhmer';
   final base = ThemeData(
     useMaterial3: true,
+    fontFamily: khFont,
     scaffoldBackgroundColor: C.bg,
     colorScheme: ColorScheme.fromSeed(seedColor: C.primary, surface: C.bg),
-    // Default body style: generous line height so Khmer never clips,
-    // even on widgets that don't set their own height.
+    // Khmer stacks subscripts above/below the base — keep line height
+    // generous everywhere, even on widgets that set no style of their own.
     textTheme: const TextTheme(
-      bodySmall: TextStyle(height: 1.4),
-      bodyMedium: TextStyle(height: 1.4),
-      bodyLarge: TextStyle(height: 1.4),
-      labelSmall: TextStyle(height: 1.3),
-      labelMedium: TextStyle(height: 1.3),
+      bodySmall: TextStyle(fontFamily: khFont, height: 1.6),
+      bodyMedium: TextStyle(fontFamily: khFont, height: 1.6),
+      bodyLarge: TextStyle(fontFamily: khFont, height: 1.6),
+      labelSmall: TextStyle(fontFamily: khFont, height: 1.5),
+      labelMedium: TextStyle(fontFamily: khFont, height: 1.5),
+      titleSmall: TextStyle(fontFamily: khFont, height: 1.5),
+      titleMedium: TextStyle(fontFamily: khFont, height: 1.5),
+      titleLarge: TextStyle(fontFamily: khFont, height: 1.4),
     ),
   );
   return base.copyWith(
@@ -56,8 +61,8 @@ ThemeData appTheme() {
       scrolledUnderElevation: 0,
       centerTitle: false,
       foregroundColor: C.ink,
-      titleTextStyle:
-          TextStyle(color: C.ink, fontSize: 18, fontWeight: FontWeight.w800),
+      titleTextStyle: TextStyle(fontFamily: khFont, color: C.ink, fontSize: 18,
+          fontWeight: FontWeight.w800, height: 1.5),
     ),
     dividerTheme: const DividerThemeData(color: C.line, thickness: 1),
     snackBarTheme: const SnackBarThemeData(behavior: SnackBarBehavior.floating),

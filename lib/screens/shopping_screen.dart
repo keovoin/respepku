@@ -63,7 +63,7 @@ class ShoppingScreen extends StatelessWidget {
             : Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                    padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
                     child: Row(
                       children: [
                         Expanded(
@@ -81,7 +81,7 @@ class ShoppingScreen extends StatelessWidget {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(6),
                       child: LinearProgressIndicator(
@@ -95,7 +95,7 @@ class ShoppingScreen extends StatelessWidget {
                   const SizedBox(height: 14),
                   Expanded(
                     child: ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
                       itemCount: items.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 8),
                       itemBuilder: (_, i) {

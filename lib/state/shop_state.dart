@@ -145,6 +145,13 @@ class ShopState extends ChangeNotifier {
   List<RecipeSet> get sets => _sets;
   List<Banner> get banners => _banners;
 
+  /// KHR per 1 USD (from the server, editable in admin Settings).
+  double usdRate = 4100;
+
+  /// Approximate USD mirror of a KHR amount, for dual display.
+  String usd(double khr) =>
+      '\$${(khr / (usdRate <= 0 ? 4100 : usdRate)).toStringAsFixed(2)}';
+
   RecipeSet? setForMeal(String mealId) {
     for (final s in _sets) {
       if (s.mealId == mealId && s.stock > 0) return s;
@@ -160,6 +167,7 @@ class ShopState extends ChangeNotifier {
         body: jsonEncode({'action': 'catalog'}),
       );
       final j = jsonDecode(body.body) as Map<String, dynamic>;
+      usdRate = (j['usd_rate'] as num?)?.toDouble() ?? 4100;
       final sets = (j['sets'] as List? ?? const [])
           .cast<Map<String, dynamic>>()
           .map(RecipeSet.fromJson)

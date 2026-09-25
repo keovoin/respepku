@@ -81,7 +81,7 @@ class _SearchScreenState extends State<SearchScreen> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+              padding: const EdgeInsets.fromLTRB(24, 4, 24, 12),
               child: Row(
                 children: [
                   Expanded(
@@ -138,7 +138,7 @@ class _SearchScreenState extends State<SearchScreen> {
             // ---- Category grid (only when pushed from home) ----
             if (widget.initialCategory != null && !_searched) ...[
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 6, 20, 0),
+                padding: const EdgeInsets.fromLTRB(24, 6, 24, 0),
                 child: Text(context.t('category'),
                     style: const TextStyle(height: 1.4, 
                         fontSize: 16,
@@ -148,7 +148,7 @@ class _SearchScreenState extends State<SearchScreen> {
               const SizedBox(height: 12),
               Expanded(
                 child: GridView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
                   gridDelegate:
                       const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
@@ -235,7 +235,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               )
                             : ListView.separated(
                                 padding:
-                                    const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                                    const EdgeInsets.fromLTRB(24, 0, 24, 24),
                                 itemCount: _results.length,
                                 separatorBuilder: (_, __) =>
                                     const SizedBox(height: 4),

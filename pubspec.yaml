@@ -25,3 +25,17 @@ flutter:
   assets:
     # Bundled offline recipe photos — the app needs no network at all.
     - assets/food/
+  fonts:
+    # Proper Khmer rendering (stacked subscripts need real metrics).
+    - family: NotoSansKhmer
+      fonts:
+        - asset: assets/fonts/NotoSansKhmer-400.ttf
+          weight: 400
+        - asset: assets/fonts/NotoSansKhmer-500.ttf
+          weight: 500
+        - asset: assets/fonts/NotoSansKhmer-600.ttf
+          weight: 600
+        - asset: assets/fonts/NotoSansKhmer-700.ttf
+          weight: 700
+        - asset: assets/fonts/NotoSansKhmer-800.ttf
+          weight: 800

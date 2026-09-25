@@ -49,6 +49,13 @@ class AppState extends ChangeNotifier {
   String customerPhone = '';
   int customerTime = 0;
 
+  /// Orders placed from this device (persisted): ref, total, method, date.
+  final List<Map<String, String>> orderHistory = [];
+  double weeklyCooked = 0; // recipe-cooked counter for the weekly goal
+
+  /// Star rating the user gave the app (0 = not yet).
+  int appRating = 0;
+
   SharedPreferences? _prefs;
 
   Future<void> init() async {
@@ -94,6 +101,16 @@ class AppState extends ChangeNotifier {
       customerName = p.getString('cust_name') ?? '';
       customerPhone = p.getString('cust_phone') ?? '';
       customerTime = p.getInt('cust_time') ?? 0;
+      final ordersRaw = p.getString('orders');
+      if (ordersRaw != null) {
+        for (final o in (jsonDecode(ordersRaw) as List)) {
+          orderHistory.add((o as Map<String, dynamic>).map(
+              (k, v) => MapEntry(k, v.toString())));
+        }
+      }
+      weeklyCooked = (p.getStringList('cooked') ?? []).length.toDouble();
+      _cooked.addAll(p.getStringList('cooked') ?? const []);
+      appRating = p.getInt('app_rating') ?? 0;
     } catch (_) {
       // corrupt data — start fresh
       _favorites.clear();
@@ -115,12 +132,56 @@ class AppState extends ChangeNotifier {
       await p.setString('cust_name', customerName);
       await p.setString('cust_phone', customerPhone);
       await p.setInt('cust_time', customerTime);
+      await p.setString('orders', jsonEncode(orderHistory));
+      await p.setInt('app_rating', appRating);
     } catch (_) {
       // storage failure — keep working in memory
     }
   }
 
-  double get progress => 0.62; // weekly goal (mock, phase 1)
+  /// Weekly goal: cook 6 recipes/week from real "cooked" marks.
+  double get progress => (_cooked.length / 6).clamp(0.0, 1.0);
+
+  // ---------- cooked / weekly goal ----------
+  final Set<String> _cooked = {};
+  bool isCooked(String id) => _cooked.contains(id);
+  int get cookedCount => _cooked.length;
+  void toggleCooked(String id) {
+    if (!_cooked.add(id)) _cooked.remove(id);
+    weeklyCooked = _cooked.length.toDouble();
+    notifyListeners();
+    if (_prefs != null) _prefs!.setStringList('cooked', _cooked.toList());
+  }
+
+  // ---------- order history ----------
+  void addOrder({required String ref, required String total, required String method}) {
+    orderHistory.insert(0, {
+      'ref': ref,
+      'total': total,
+      'method': method,
+      'date': DateTime.now().toIso8601String(),
+    });
+    notifyListeners();
+    _save();
+  }
+
+  int get orderCount => orderHistory.length;
+
+  // ---------- app rating ----------
+  void setRating(int stars) {
+    appRating = stars;
+    notifyListeners();
+    _save();
+  }
+
+  // ---------- sign out (local profile only) ----------
+  void clearProfile() {
+    customerName = '';
+    customerPhone = '';
+    customerTime = 0;
+    notifyListeners();
+    _save();
+  }
 
   // ---------- favorites ----------
   bool isFavorite(String id) => _favorites.containsKey(id);

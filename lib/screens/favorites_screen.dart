@@ -55,7 +55,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
               child: Text(context.t('fav_sub'),
                   style: const TextStyle(height: 1.4, fontSize: 12, color: C.muted)),
             ),
@@ -64,7 +64,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               height: 38,
               child: ListView(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 24),
                 children: List.generate(_filterKeys.length, (i) {
                   final k = _filterKeys[i];
                   final active = _filterKey == k;
@@ -97,7 +97,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               child: shown.isEmpty
                   ? _EmptyState()
                   : ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
                       itemCount: shown.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 4),
                       itemBuilder: (_, i) => MealCardRow(

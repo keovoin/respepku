@@ -131,6 +131,11 @@ class _CartScreenState extends State<CartScreen> {
         _order = o;
         _paid = o['status'] == 'paid';
       });
+      // record in local order history (Account → history/notifications)
+      context.read<AppState>().addOrder(
+          ref: (o['order_ref'] ?? '').toString(),
+          total: s.money(((o['total'] ?? 0) as num).toDouble()),
+          method: method);
       if (method == 'cutluy' && o['status'] != 'paid') {
         _poll = Timer.periodic(const Duration(seconds: 4), (_) => _check());
         _check();
@@ -230,7 +235,7 @@ class _CartScreenState extends State<CartScreen> {
     double discount = _quote?['discount']?.toDouble() ?? 0;
     double total = (subtotal - discount).clamp(0.0, subtotal);
     return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 120),
+      padding: const EdgeInsets.fromLTRB(24, 8, 24, 120),
       children: [
         for (final l in s.cart)
           Container(
@@ -374,6 +379,18 @@ class _CartScreenState extends State<CartScreen> {
                     green: true),
               const Divider(height: 18),
               _TotalRow(context.t('total'), s.money(total), big: true),
+              Padding(
+                padding: const EdgeInsets.only(top: 2),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const SizedBox(),
+                    Text('≈ ${s.usd(total)} · ${context.t('usd_note')}',
+                        style: const TextStyle(
+                            height: 1.4, fontSize: 11, color: C.muted)),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -405,7 +422,7 @@ class _CartScreenState extends State<CartScreen> {
     double discount = _quote?['discount']?.toDouble() ?? 0;
     double total = (subtotal - discount).clamp(0.0, subtotal);
     return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 130),
+      padding: const EdgeInsets.fromLTRB(24, 8, 24, 130),
       children: [
         _SectionTitle(context.t('your_info')),
         _Field(
@@ -543,6 +560,10 @@ class _CartScreenState extends State<CartScreen> {
                   Text('${context.t('total')} ${s.money((o['total'] ?? 0).toDouble())}',
                       style: const TextStyle(height: 1.4,
                           fontSize: 15, fontWeight: FontWeight.w800)),
+                  if ((o['usd_amount'] ?? '') != '')
+                    Text('${context.t('usd_note')} ${o['usd_amount']} (KHQR)',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(height: 1.4, fontSize: 11, color: C.muted)),
                   const SizedBox(height: 14),
                   if (data.isNotEmpty)
                     QrImageView(

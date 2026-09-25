@@ -17,7 +17,7 @@ class MealLocale {
 /// meal id -> Khmer locale data.
 const Map<String, MealLocale> mealKh = {
   '53495': MealLocale(
-    name: 'អំបុកត្រី',
+    name: 'អាម៉ុកត្រី',
     ingredients: [
       ['បន្ទះត្រី', '1 ផោន'],
       ['ទឹកដំណូក', '1 ធូស'],
@@ -46,7 +46,7 @@ const Map<String, MealLocale> mealKh = {
     ],
   ),
   '53496': MealLocale(
-    name: 'បាយដំណ៉ំច្រូក',
+    name: 'បាយសាច់ជ្រូក',
     ingredients: [
       ['សាច់ដុំស្វី', '650 ក្រាម'],
       ['ទឹកដំណូក', '1/4 ពែង'],
@@ -77,7 +77,7 @@ const Map<String, MealLocale> mealKh = {
     ],
   ),
   '53497': MealLocale(
-    name: 'នំបន់ឆោក',
+    name: 'នំបញ្ចុក',
     ingredients: [
       ['ទឹក', '8 ពែង'],
       ['ជើងមាន់', '1 ផោន'],
@@ -106,7 +106,7 @@ const Map<String, MealLocale> mealKh = {
     ],
   ),
   '53498': MealLocale(
-    name: 'សាំលាការី',
+    name: 'សម្លការី',
     ingredients: [
       ['ប្រេងរំអិល', '1 ក.ប'],
       ['ជើងមាន់', '1 ផោន'],
@@ -139,7 +139,7 @@ const Map<String, MealLocale> mealKh = {
     ],
   ),
   '53499': MealLocale(
-    name: 'ផ្លកត្តិស',
+    name: 'ប្រអុកខ្ទិស',
     ingredients: [
       ['សាច់ស្វីមូរ', '1 ផោន'],
       ['ទឹកដំណូក', '1 ពែង'],
@@ -169,7 +169,7 @@ const Map<String, MealLocale> mealKh = {
     ],
   ),
   '53418': MealLocale(
-    name: 'វារីសាឡូនចាស់សាច់មូរ និងដុំ',
+    name: 'ត្រកួន',
     ingredients: [
       ['វារីសាឡូន', '1 ដើម'],
       ['សាច់ស្វីមូរ', '150 ក្រាម'],
@@ -189,7 +189,7 @@ const Map<String, MealLocale> mealKh = {
     ],
   ),
   '53419': MealLocale(
-    name: 'ត្រីចាបដុំ',
+    name: 'ត្រីចៀនចួន',
     ingredients: [
       ['ម្ជូរ', '2 ពែង'],
       ['បន្ទះត្រី', '1 ផោន'],
@@ -239,7 +239,7 @@ const Map<String, MealLocale> mealKh = {
     ],
   ),
   '53500': MealLocale(
-    name: 'នំអំបូរ',
+    name: 'នំអន្សម',
     ingredients: [
       ['អង្ករដូង', '2 ពែង'],
       ['ទឹកដំណូក', '1 ពែង'],
