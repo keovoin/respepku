@@ -52,3 +52,5 @@ docs/admin/credentials.json
 
 # agent scratch archives (local only)
 _agent_archive/
+
+_tmp_targets.json
