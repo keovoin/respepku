@@ -350,7 +350,16 @@ function renderSettings(st){
   '<hr style="border:0;border-top:1px solid var(--line);margin:16px 0">'+
   '<div class="field"><label>Change admin passcode</label><div class="row"><input id="set_pw" type="password" placeholder="new passcode (min 8)…"><button class="btn ghost" onclick="savePw()">Update</button></div></div>'+
   '<div class="field"><label>CutLuy webhook URL (orders function callback)</label><input id="set_wh" value="'+esc(st.meal_webhook_url||"")+'" disabled></div>'+
+  '<hr style="border:0;border-top:1px solid var(--line);margin:16px 0">'+
+  '<div class="field"><label>Twilio SID (phone OTP — leave empty to disable)</label><input id="set_twsid" value="'+esc(st.sms_twilio_sid||"")+'"></div>'+
+  '<div class="field"><label>Twilio Auth Token</label><input id="set_twauth" type="password" value="'+esc(st.sms_twilio_auth||"")+'"></div>'+
+  '<button class="btn ghost" onclick="saveTwilio()">Save Twilio</button>'+
   '</div>';
+}
+function saveTwilio(){
+  const a=v("set_twsid"),b=v("set_twauth");
+  if(a&&b.length<10)return toast("Auth token looks too short",true);
+  Promise.all([call("settings.set",{key:"sms_twilio_sid",value:a}),call("settings.set",{key:"sms_twilio_auth",value:b})]).then(()=>toast("Twilio saved — phone OTP active")).catch(e=>toast(e.message,true));
 }
 function saveRate(){call("settings.set",{key:"usd_rate",value:v("set_rate")}).then(()=>toast("Rate saved")).catch(e=>toast(e.message,true));}
 function savePw(){const p=v("set_pw");if(p.length<8)return toast("Too short",true);call("settings.set",{key:"store_admin_pass",value:p}).then(()=>{toast("Passcode updated");document.getElementById("set_pw").value="";}).catch(e=>toast(e.message,true));}

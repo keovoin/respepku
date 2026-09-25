@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           // ---- Header ----
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+            padding: const EdgeInsets.fromLTRB(32, 16, 32, 0),
             child: Row(
               children: [
                 const CircleAvatar(
@@ -101,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 16),
           // ---- Search bar (decorative -> opens search tab) ----
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 32),
             child: GestureDetector(
               onTap: () => Navigator.push(context,
                   MaterialPageRoute(builder: (_) => const SearchScreen())),
@@ -126,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const ShopBannerCarousel(),
           // ---- Featured banner ----
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+            padding: const EdgeInsets.fromLTRB(32, 20, 32, 0),
             child: GestureDetector(
               onTap: () => _openDetail(featured),
               child: Container(
@@ -222,7 +222,7 @@ class _HomeScreenState extends State<HomeScreen> {
             height: 92,
             child: ListView(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 32),
               children: List.generate(
                 _cats(context).length,
                 (i) {
@@ -244,7 +244,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SectionHeader(title: context.t('popular_today')),
           if (!_loaded)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Row(
                 children: [
                   const CircularProgressIndicator(strokeWidth: 2.5, color: C.primary),
@@ -256,7 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
             )
           else if (_failed)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Text(context.t('load_failed'),
                   style: const TextStyle(height: 1.4, color: C.muted)),
             )
@@ -265,7 +265,7 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 190,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.symmetric(horizontal: 32),
                 itemCount: _popular.length,
                 separatorBuilder: (_, __) => const SizedBox(width: 12),
                 itemBuilder: (_, i) => MealCardH(
@@ -277,7 +277,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // ---- Continue cooking ----
           SectionHeader(title: context.t('continue_cooking')),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 32),
             child: _ContinueCard(meal: featured, onTap: () => _openDetail(featured)),
           ),
           const SizedBox(height: 8),
