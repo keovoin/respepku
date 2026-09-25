@@ -215,7 +215,7 @@ function renderOrders(){
       '<span style="flex:1"></span><b>'+money(o.total)+'</b>'+
       '<span class="b '+(isQR?"info":"pen")+'">'+(isQR?"QR · "+(payed?(o.paid_amount?"USD "+o.paid_amount:"USD "+(o.usd_amount??"?")):""):"COD")+'</span></summary>'+
       '<div class="grid2" style="margin-top:6px">'+
-      '<div><div class="field"><label>Customer</label>'+esc(o.customer_name)+' · '+esc(o.phone)+'<br><span class="small muted">'+esc(o.address)+'</span><br><span class="small muted">time: '+esc(o.delivery_time||"—")+'</span></div>'+
+      '<div><div class="field"><label>Customer</label>'+esc(o.customer_name)+' · '+esc(o.phone)+'<br><span class="small muted">'+esc(o.address)+'</span>'+(o.lat!=null&&o.lng!=null?'<br><a class="small" target="_blank" href="https://www.google.com/maps?q='+o.lat+','+o.lng+'">📍 View pin on Google Maps</a>':'')+(o.remark?'<br><span class="small" style="color:#b45309">✏️ '+esc(o.remark)+'</span>':'')+'<br><span class="small muted">time: '+esc(o.delivery_time||"—")+'</span></div>'+
       (o.promo_code?'<span class="b info">PROMO '+esc(o.promo_code)+'</span>':'')+'</div>'+
       '<div><div class="field"><label>Items</label>'+items+
       '<div class="small muted right" style="margin-top:6px">subtotal '+money(o.subtotal)+(Number(o.discount)?' · discount -'+money(o.discount):'')+' · <b>'+money(o.total)+'</b>'+
