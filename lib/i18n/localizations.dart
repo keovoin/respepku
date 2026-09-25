@@ -54,6 +54,12 @@ class I18N extends ChangeNotifier {
   static const _tr = <String, Map<String, String>>{
     // ---------------- Khmer ----------------
     kh: {
+      'addr_remark': 'កំណត់សម្គាល់ (សម្គាល់សម្គាល់ ពណ៌ផ្ទះ ការណែនាំបន្ថែម)',
+      'addr_remark_ph': 'ឧ. សេតវិមានដែលមានទ្វារពណ៌ខៀវ នៅក្បែរឱសថស្ថាន',
+      'map_tap': 'ប៉ះផែនទីដើម្បីកំណត់លេខ PIN',
+      'map_confirm': 'បញ្ជាក់លេខកូដថ្មី',
+      'map_pick': 'ជ្រើសយកនៅលើផែនទី',
+
       'nav_home': 'ទំព័រដើម',
       'nav_search': 'ស្វែងរក',
       'nav_fav': 'ចូលចិត្ត',
@@ -230,6 +236,12 @@ class I18N extends ChangeNotifier {
     },
     // ---------------- English ----------------
     en: {
+      'addr_remark': 'Remark (landmark, house color, extra instructions)',
+      'addr_remark_ph': 'e.g. White house with blue gate, next to the pharmacy',
+      'map_tap': 'Tap to set your PIN',
+      'map_confirm': 'Confirm pin',
+      'map_pick': 'Pick on map',
+
       'nav_home': 'Home',
       'nav_search': 'Search',
       'nav_fav': 'Favorites',
