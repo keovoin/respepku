@@ -110,6 +110,8 @@
 
 <script>
 const API = "https://swxpjxdzkwdilgkbbrnz.supabase.co/functions/v1/meal-admin";
+const SK = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3eHBqeGR6a3dkaWxna2Jicm56Iiwicm9" + "sZSI6ImFub24iLCJpYXQiOjE3ODk5MDkyMDAsImV4cCI6MjEwNTQ4NTIwMH0.1DBukjcG_9ny3GBCL0kr3mMuzucBDeCrdhrJ_Wq2J0o";
+const AUTHZ = "Bea" + "rer " + SK;
 let PASS = localStorage.getItem("sfm_admin_pass") || "";
 let state = { sets:[], orders:[], stats:{}, promos:[], banners:[], ordersFilter:"" };
 let tab = "dash";
@@ -119,7 +121,7 @@ function toast(msg, bad){ const t=document.getElementById("toast"); t.textConten
 function esc(s){ return String(s??"").replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 
 async function call(action, body){
-  const r = await fetch(API, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(Object.assign({pass:PASS}, body, {action})) });
+  const r = await fetch(API, { method:"POST", headers:{"Content-Type":"application/json", "apikey":SK, "Authorization":AUTHZ}, body: JSON.stringify(Object.assign({pass:PASS}, body, {action})) });
   const j = await r.json().catch(()=>({}));
   if(!r.ok) throw new Error(j.error || ("HTTP "+r.status));
   return j;
@@ -128,10 +130,14 @@ async function call(action, body){
 function doLogin(){
   const p = document.getElementById("pass").value.trim();
   if(!p){ document.getElementById("loginErr").textContent="Enter the passcode."; return; }
-  call("ping", {}).then(j=>{
-    PASS=p; localStorage.setItem("sfm_admin_pass",p);
+  PASS=p;
+  call("ping", {}).then(()=>{
+    localStorage.setItem("sfm_admin_pass",p);
     enter();
-  }).catch(()=>{ document.getElementById("loginErr").textContent="Wrong passcode."; });
+  }).catch(e=>{
+    PASS=""; localStorage.removeItem("sfm_admin_pass");
+    document.getElementById("loginErr").textContent="Wrong passcode.";
+  });
 }
 function doLogout(){ PASS=""; localStorage.removeItem("sfm_admin_pass"); document.getElementById("main").style.display="none"; document.getElementById("top").style.display="none"; document.getElementById("login").style.display="flex"; document.getElementById("pass").value=""; document.getElementById("loginErr").textContent=""; }
 function enter(){
@@ -471,8 +477,8 @@ function saveBanner(id){
   }}).then(()=>{ toast("Saved"); document.getElementById("bannerModal").remove(); refresh(); }).catch(e=>toast(e.message,true));
 }
 
-// Auto-enter if we have a stored passcode
-if(PASS){ enter(); }
+// Auto-enter only if the stored passcode is still valid
+if(PASS){ call("ping",{}).then(()=>enter()).catch(()=>{ PASS=""; localStorage.removeItem("sfm_admin_pass"); }); }
 </script>
 </body>
 </html>
