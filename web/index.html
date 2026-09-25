@@ -53,6 +53,9 @@
               localStorage.setItem("tg_name",
                 tg.initDataUnsafe.user.first_name || "");
             }
+            // hand the signed initData to the Flutter app (shared_preferences
+            // on web stores keys under the localStorage "flutter." prefix)
+            localStorage.setItem("flutter.tg_init", tg.initData || "");
           } catch (e) {}
         }
       } catch (e) {}

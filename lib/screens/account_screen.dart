@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../i18n/localizations.dart';
+import '../state/account_state.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
+import 'auth_screen.dart';
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
@@ -10,6 +12,7 @@ class AccountScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final st = context.watch<AppState>();
+    final acc = context.watch<AccountState>();
     final i18n = context.watch<I18N>();
     return Scaffold(
       backgroundColor: C.bg,
@@ -58,9 +61,11 @@ class AccountScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                            st.customerName.isEmpty
-                                ? 'Sastra Fitmeal'
-                                : st.customerName,
+                            acc.name.isNotEmpty
+                                ? acc.name
+                                : (st.customerName.isNotEmpty
+                                    ? st.customerName
+                                    : 'Sastra Fitmeal'),
                             style: const TextStyle(
                                 height: 1.4,
                                 fontSize: 17,
@@ -68,14 +73,45 @@ class AccountScreen extends StatelessWidget {
                                 color: Colors.white)),
                         const SizedBox(height: 3),
                         Text(
-                            st.customerPhone.isEmpty
-                                ? context.t('guest_note')
-                                : st.customerPhone,
+                            acc.loggedIn
+                                ? (acc.userEmail?.contains('@fitmeal.tg') ?? true
+                                    ? acc.phone.isNotEmpty
+                                        ? acc.phone
+                                        : (acc.tgName ?? '')
+                                    : acc.userEmail ?? '')
+                                : acc.inTelegram
+                                    ? context.t('account_login')
+                                    : context.t('login_benefit'),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                                 height: 1.4,
                                 fontSize: 12,
                                 color: Colors.white70)),
                       ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: acc.loggedIn
+                        ? null
+                        : () => Navigator.push(context,
+                            MaterialPageRoute(builder: (_) => const AuthScreen())),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.22),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                          acc.loggedIn
+                              ? '✓'
+                              : context.t('account_login'),
+                          style: const TextStyle(
+                              height: 1.4,
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white)),
                     ),
                   ),
                 ],
@@ -510,6 +546,7 @@ class AccountScreen extends StatelessWidget {
             style: FilledButton.styleFrom(backgroundColor: C.red),
             onPressed: () {
               context.read<AppState>().clearProfile();
+              context.read<AccountState>().logout();
               Navigator.pop(bc);
               ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(context.t('logout_done'))));

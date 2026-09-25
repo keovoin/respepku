@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import '../i18n/localizations.dart';
+import '../state/account_state.dart';
 import '../state/app_state.dart';
 import '../state/shop_state.dart';
 import '../theme.dart';
@@ -49,9 +50,14 @@ class _CartScreenState extends State<CartScreen> {
     super.initState();
     // prefill from the shopping/account profile if present
     final st = context.read<AppState>();
-    _nameCtrl.text = st.customerName;
-    _phoneCtrl.text = st.customerPhone;
-    _time = st.customerTime;
+    final acc = context.read<AccountState>();
+    _nameCtrl.text = acc.name.isNotEmpty ? acc.name : st.customerName;
+    _phoneCtrl.text = acc.phone.isNotEmpty ? acc.phone : st.customerPhone;
+    _addrCtrl.text = acc.address;
+    _time = acc.deliveryTime.isNotEmpty
+        ? ['asap', 'morning', 'lunch', 'dinner'].indexOf(acc.deliveryTime)
+        : st.customerTime;
+    if (_time < 0) _time = 0;
     // banner deep-link: pre-fill the promo code
     final hint = widget.promoHint?.trim() ?? '';
     if (hint.isNotEmpty) {
@@ -107,6 +113,12 @@ class _CartScreenState extends State<CartScreen> {
     }
     final st = context.read<AppState>();
     st.saveCustomer(name, phone, _time);
+    // logged-in customers: persist as their saved profile for next time
+    final acc = context.read<AccountState>();
+    if (acc.loggedIn) {
+      acc.saveProfile(name: name, phone: phone, address: addr,
+          deliveryTime: _deliveryKey());
+    }
     setState(() {
       _phase = 2;
       _err = null;

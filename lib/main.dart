@@ -7,6 +7,7 @@ import 'screens/favorites_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/search_screen.dart';
 import 'screens/shopping_screen.dart';
+import 'state/account_state.dart';
 import 'state/app_state.dart';
 import 'state/shop_state.dart';
 import 'theme.dart';
@@ -16,21 +17,26 @@ Future<void> main() async {
   final i18n = I18N();
   final app = AppState();
   final shop = ShopState.i;
+  final account = AccountState();
   await i18n.init();
   await app.init();
   await shop.init();
+  await account.init(); // incl. silent Telegram Mini App login
   // Fire-and-forget: the shop is an enhancement, not a boot dependency.
   shop.loadCatalog();
-  runApp(SastraFitmealApp(i18n: i18n, app: app, shop: shop));
+  runApp(SastraFitmealApp(
+      i18n: i18n, app: app, shop: shop, account: account));
 }
 
 class SastraFitmealApp extends StatelessWidget {
   final I18N i18n;
   final AppState app;
   final ShopState shop;
+  final AccountState account;
 
   const SastraFitmealApp(
-      {super.key, required this.i18n, required this.app, required this.shop});
+      {super.key, required this.i18n, required this.app, required this.shop,
+      required this.account});
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +45,7 @@ class SastraFitmealApp extends StatelessWidget {
         ChangeNotifierProvider.value(value: i18n),
         ChangeNotifierProvider.value(value: app),
         ChangeNotifierProvider.value(value: shop),
+        ChangeNotifierProvider.value(value: account),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

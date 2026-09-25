@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../i18n/localizations.dart';
 import '../models/featured.dart';
 import '../models/meal.dart';
 import '../state/app_state.dart';
+import '../state/shop_state.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
+import 'cart_screen.dart';
 import 'detail_screen.dart';
 import 'search_screen.dart';
 
@@ -88,9 +91,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text(context.t('no_notifications'))))),
                 _CircleButton(icon: Icons.shopping_bag_outlined,
+                    badge: context.watch<ShopState>().itemCount,
                     onTap: () =>
                         Navigator.push(context,
-                            MaterialPageRoute(builder: (_) => const SearchScreen()))),
+                            MaterialPageRoute(builder: (_) => const CartScreen()))),
               ],
             ),
           ),
@@ -390,7 +394,8 @@ class _ContinueCard extends StatelessWidget {
 class _CircleButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
-  const _CircleButton({required this.icon, required this.onTap});
+  final int badge;
+  const _CircleButton({required this.icon, required this.onTap, this.badge = 0});
 
   @override
   Widget build(BuildContext context) {
@@ -405,7 +410,27 @@ class _CircleButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(13),
           border: Border.all(color: C.line),
         ),
-        child: Icon(icon, size: 20, color: C.ink),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Icon(icon, size: 20, color: C.ink),
+            if (badge > 0)
+              Positioned(
+                top: 4,
+                right: 4,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  constraints: const BoxConstraints(minWidth: 15, minHeight: 15),
+                  decoration: BoxDecoration(
+                      color: C.primary, borderRadius: BorderRadius.circular(8)),
+                  child: Text('$badge',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(height: 1.2, fontSize: 9,
+                          fontWeight: FontWeight.w800, color: Colors.white)),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

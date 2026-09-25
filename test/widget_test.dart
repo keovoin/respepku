@@ -13,6 +13,7 @@ import 'package:sastra_fitmeal/screens/favorites_screen.dart';
 import 'package:sastra_fitmeal/screens/home_screen.dart';
 import 'package:sastra_fitmeal/screens/search_screen.dart';
 import 'package:sastra_fitmeal/screens/shopping_screen.dart';
+import 'package:sastra_fitmeal/state/account_state.dart';
 import 'package:sastra_fitmeal/state/app_state.dart';
 import 'package:sastra_fitmeal/state/shop_state.dart';
 import 'dart:io';
@@ -37,11 +38,13 @@ Future<void> boot(WidgetTester tester) async {
   final i18n = I18N();
   final app = AppState();
   final shop = ShopState();
+  final account = AccountState();
   await i18n.init();
   await app.init();
   await shop.init();
+  await account.init();
   await tester.pumpWidget(
-      SastraFitmealApp(i18n: i18n, app: app, shop: shop));
+      SastraFitmealApp(i18n: i18n, app: app, shop: shop, account: account));
   await tester.pump(const Duration(seconds: 2));
 }
 
@@ -51,11 +54,13 @@ Future<void> bootScreen(WidgetTester tester, Widget screen) async {
   final i18n = I18N();
   final app = AppState();
   final shop = ShopState();
+  final account = AccountState();
   await i18n.init();
   await app.init();
   await shop.init();
+  await account.init();
   await tester.pumpWidget(
-      SastraFitmealApp(i18n: i18n, app: app, shop: shop));
+      SastraFitmealApp(i18n: i18n, app: app, shop: shop, account: account));
   await tester.pump(const Duration(seconds: 2));
   await tester.pumpWidget(
     MultiProvider(
@@ -63,6 +68,7 @@ Future<void> bootScreen(WidgetTester tester, Widget screen) async {
         ChangeNotifierProvider.value(value: i18n),
         ChangeNotifierProvider.value(value: app),
         ChangeNotifierProvider.value(value: shop),
+        ChangeNotifierProvider.value(value: account),
       ],
       child: MaterialApp(home: screen),
     ),
