@@ -1,8 +1,12 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Banner;
 import 'package:provider/provider.dart';
 import '../data/local_db.dart';
+import '../i18n/localizations.dart';
 import '../models/meal.dart';
+import '../screens/cart_screen.dart';
+import '../screens/detail_screen.dart';
 import '../state/app_state.dart';
+import '../state/shop_state.dart';
 import '../theme.dart';
 
 /// Recipe photo.
@@ -83,8 +87,8 @@ class SectionHeader extends StatelessWidget {
           if (onSeeAll != null)
             TextButton(
               onPressed: onSeeAll,
-              child: const Text('Lihat Semua',
-                  style: TextStyle(height: 1.4, fontSize: 13, fontWeight: FontWeight.w600)),
+              child: Text(context.t('see_all'),
+                  style: const TextStyle(height: 1.4, fontSize: 13, fontWeight: FontWeight.w600)),
             ),
         ],
       ),
@@ -124,6 +128,7 @@ class MealCardH extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final kh = context.useKhmer;
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -151,7 +156,7 @@ class MealCardH extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(meal.name,
+                  Text(meal.nameIn(kh),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(height: 1.4, 
@@ -170,7 +175,7 @@ class MealCardH extends StatelessWidget {
                       ],
                       const Spacer(),
                       if (meal.minutes != null)
-                        Text('${meal.minutes} mnt',
+                        Text(context.t('min_short', n: '${meal.minutes}'),
                             style: const TextStyle(height: 1.4, 
                                 fontSize: 12, color: C.muted)),
                     ],
@@ -199,6 +204,7 @@ class MealCardRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final st = context.watch<AppState>();
+    final kh = context.useKhmer;
     final fav = st.isFavorite(meal.id);
     return GestureDetector(
       onTap: onTap,
@@ -221,7 +227,7 @@ class MealCardRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(meal.name,
+                  Text(meal.nameIn(kh),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(height: 1.4, 
@@ -239,7 +245,7 @@ class MealCardRow extends StatelessWidget {
                                 const TextStyle(height: 1.4, fontSize: 12, color: C.muted)),
                       ],
                       const SizedBox(width: 10),
-                      Text(meal.category,
+                      Text(context.t(catKey(meal.category)),
                           style: const TextStyle(height: 1.4, fontSize: 12, color: C.muted)),
                     ],
                   ),
@@ -260,6 +266,252 @@ class MealCardRow extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Store shelf: buy-able ingredient sets (from the live backend catalog).
+class StoreSection extends StatelessWidget {
+  const StoreSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final shop = context.watch<ShopState>();
+    if (!shop.loaded || shop.sets.isEmpty) return const SizedBox.shrink();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 6),
+        SectionHeader(
+          title: context.t('store_section'),
+          onSeeAll: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const CartScreen()),
+          ),
+        ),
+        const SizedBox(height: 4),
+        SizedBox(
+          height: 208,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: shop.sets.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 10),
+            itemBuilder: (context, i) => _SetCard(set: shop.sets[i]),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Live promo banners from the store, shown as a horizontal carousel on Home.
+class ShopBannerCarousel extends StatelessWidget {
+  const ShopBannerCarousel({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final shop = context.watch<ShopState>();
+    final banners = shop.banners;
+    if (!shop.loaded || banners.isEmpty) return const SizedBox.shrink();
+    return SizedBox(
+      height: 116,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+        itemCount: banners.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        itemBuilder: (context, i) => _BannerCard(banner: banners[i]),
+      ),
+    );
+  }
+}
+
+class _BannerCard extends StatelessWidget {
+  final Banner banner;
+  const _BannerCard({required this.banner});
+
+  void _tap(BuildContext context) {
+    final link = banner.link;
+    if (link.startsWith('promo:')) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (_) => CartScreen(promoHint: link.substring(6))),
+      );
+      return;
+    }
+    if (link.startsWith('meal:')) {
+      final m = MealApi.lookup(link.substring(5));
+      if (m != null) {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (_) => DetailScreen(meal: m)));
+        return;
+      }
+    }
+    if (link.isNotEmpty) {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (_) => const CartScreen()));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final kh = context.useKhmer;
+    return GestureDetector(
+      onTap: () => _tap(context),
+      child: Container(
+        width: 240,
+        height: 100,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: C.line),
+          color: C.card,
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(17),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              banner.imageUrl.isNotEmpty
+                  ? Image.network(
+                      banner.imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Container(
+                          color: const Color(0xFFFF9A3D)),
+                    )
+                  : Container(color: const Color(0xFFFF9A3D)),
+              Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.transparent, Color(0xB0000000)],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(banner.title(kh),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              height: 1.3,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white)),
+                      if (banner.subtitle(kh).isNotEmpty)
+                        Text(banner.subtitle(kh),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                                height: 1.3,
+                                fontSize: 11.5,
+                                color: Colors.white70)),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SetCard extends StatelessWidget {
+  final RecipeSet set;
+  const _SetCard({required this.set});
+
+  @override
+  Widget build(BuildContext context) {
+    final shop = context.read<ShopState>();
+    final inCart = shop.cartQty(set.id);
+    final kh = context.useKhmer;
+    return Container(
+      width: 168,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: C.card,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: C.line),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: set.imageUrl != null && set.imageUrl!.isNotEmpty
+                  ? Image.network(
+                      set.imageUrl!,
+                      fit: BoxFit.cover,
+                      width: 148,
+                      height: 88,
+                      errorBuilder: (_, __, ___) => _SetFallback(set),
+                    )
+                  : _SetFallback(set),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(set.name(kh),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(height: 1.4,
+                  fontSize: 14, fontWeight: FontWeight.w700, color: C.ink)),
+          const SizedBox(height: 2),
+          Text(shop.money(set.price),
+              style: const TextStyle(height: 1.4,
+                  fontSize: 14, fontWeight: FontWeight.w800, color: C.primary)),
+          const SizedBox(height: 6),
+          SizedBox(
+            width: double.infinity,
+            child: inCart == 0
+                ? FilledButton(
+                    style: FilledButton.styleFrom(
+                        backgroundColor: C.primary, padding: const EdgeInsets.symmetric(vertical: 8)),
+                    onPressed: () => shop.addToCart(set),
+                    child: Text(context.t('add'),
+                        style: const TextStyle(height: 1.4,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white)),
+                  )
+                : FilledButton.tonal(
+                    style: FilledButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 8)),
+                    onPressed: () => shop.setQty(set, inCart - 1),
+                    child: Text(context.t('in_cart', n: '$inCart'),
+                        style: const TextStyle(height: 1.4, fontSize: 13, fontWeight: FontWeight.w700))),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SetFallback extends StatelessWidget {
+  final RecipeSet set;
+  const _SetFallback(this.set);
+
+  @override
+  Widget build(BuildContext context) {
+    final meal = MealApi.lookup(set.mealId);
+    return MealImage(
+      meal: meal ??
+          Meal(
+            id: set.mealId,
+            name: set.nameEn,
+            image: 'assets/food/${set.mealId}.jpg',
+          ),
+      width: 148,
+      height: 88,
     );
   }
 }

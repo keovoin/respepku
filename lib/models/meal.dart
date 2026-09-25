@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../data/meal_i18n.dart';
+
 /// Domain models for recipes, ingredients, categories.
 class Ingredient {
   final String name;
@@ -63,6 +65,53 @@ class Meal {
   List<Ingredient> get allIngredients =>
       [...ingredients, ...bumbu];
 
+  // ---------- Khmer locale (from meal_i18n.dart) ----------
+
+  /// Khmer rendering of this meal, if bundled.
+  MealLocale? get localeData => mealKh[id];
+
+  /// Display name in the requested language (Khmer falls back to English).
+  String nameIn(bool useKhmer) {
+    if (useKhmer) {
+      final l = localeData;
+      if (l != null) return l.name;
+    }
+    return name;
+  }
+
+  /// Ingredients in the requested language (1:1 with the English list).
+  List<Ingredient> ingredientsIn(bool useKhmer) {
+    if (useKhmer) {
+      final l = localeData;
+      if (l != null) {
+        return [for (final p in l.ingredients) Ingredient(p[0], p[1])];
+      }
+    }
+    return allIngredients;
+  }
+
+  /// Cooking steps in the requested language.
+  List<String> stepsIn(bool useKhmer) {
+    if (useKhmer) {
+      final l = localeData;
+      if (l != null && l.steps.isNotEmpty) return l.steps;
+    }
+    return steps;
+  }
+
+  /// Ingredient name in the requested language (1:1 index/name match).
+  String ingNameIn(bool useKhmer, Ingredient ing) {
+    if (useKhmer) {
+      final l = localeData;
+      if (l != null) {
+        final i = ingredients.indexWhere(
+            (e) => e.name == ing.name && e.measure == ing.measure);
+        if (i != -1 && i < l.ingredients.length) return l.ingredients[i][0];
+      }
+    }
+    return ing.name;
+  }
+
   /// True when the photo ships inside the app (assets/food/*.jpg).
   bool get isAssetImage => image.startsWith('assets/');
 
@@ -71,9 +120,9 @@ class Meal {
     final raw = instructions;
     if (raw == null || raw.trim().isEmpty) {
       return const [
-        'Persiapkan semua bahan sesuai daftar di atas.',
-        'Masak sesuai metode resep (tumis, rebus, panggang, atau goreng).',
-        'Sajikan selagi hangat bersama nasi dan pelengkap favoritmu.',
+        'Prepare all the ingredients from the list above.',
+        'Cook following the recipe method (stir-fry, boil, bake or fry).',
+        'Serve warm with rice and your favourite sides.',
       ];
     }
     return splitInstructions(raw);

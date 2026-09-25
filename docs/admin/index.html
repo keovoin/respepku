@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sastra Fitmeal · Admin</title>
+<style>
+  :root{
+    --bg:#f6f7fb; --card:#fff; --ink:#1c2333; --muted:#6b7280; --line:#e7e9f0;
+    --pri:#ff5a36; --pri-d:#e64524; --ok:#2e9c55; --warn:#d97706; --bad:#dc2626;
+    --kh:#2b537e;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);height:100vh;display:flex;flex-direction:column}
+  h1{font-size:18px;margin:0}
+  .top{display:flex;align-items:center;gap:12px;padding:12px 18px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+  .top .logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--pri),#ff9a36);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:17px}
+  .top .grow{flex:1}
+  .btn{border:0;border-radius:9px;padding:9px 14px;font-size:13.5px;font-weight:650;cursor:pointer;background:var(--pri);color:#fff}
+  .btn:hover{background:var(--pri-d)}
+  .btn.sec{background:#eef1f6;color:var(--ink)}
+  .btn.sec:hover{background:#e2e6ee}
+  .btn.ghost{background:transparent;color:var(--muted)}
+  .btn.ghost:hover{background:#eef1f6}
+  .btn.sm{padding:6px 10px;font-size:12.5px}
+  .btn.danger{background:var(--bad)}
+  .btn.ok{background:var(--ok)}
+  .wrap{flex:1;overflow:auto;padding:20px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .stat .n{font-size:30px;font-weight:800;line-height:1}
+  .stat .l{color:var(--muted);font-size:12.5px;margin-top:6px}
+  .tabs{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+  .tab{padding:9px 16px;border-radius:10px;font-size:13.5px;font-weight:650;cursor:pointer;background:var(--card);border:1px solid var(--line);color:var(--muted)}
+  .tab.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;font-weight:700}
+  .chip{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11.5px;font-weight:700}
+  .chip.pending{background:#fef3c7;color:#92400e}
+  .chip.confirmed{background:#dbeafe;color:#1e40af}
+  .chip.preparing{background:#e0e7ff;color:#3730a3}
+  .chip.out_for_delivery{background:#cffafe;color:#155e75}
+  .chip.delivered{background:#dcfce7;color:#166534}
+  .chip.cancelled,.chip.expired,.chip.failed{background:#fee2e2;color:#991b1b}
+  .field{margin-bottom:12px}
+  .field label{display:block;font-size:12px;font-weight:650;color:var(--muted);margin-bottom:5px}
+  input,select,textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:9px;font-size:13.5px;font-family:inherit;background:#fff}
+  input:focus,select:focus,textarea:focus{outline:2px solid #ffd3c7;border-color:var(--pri)}
+  .row{display:flex;gap:10px}
+  .row>*{flex:1}
+  .modal{position:fixed;inset:0;background:rgba(20,25,40,.45);display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;z-index:20;overflow:auto}
+  .modal .box{background:var(--card);border-radius:16px;width:100%;max-width:640px;padding:20px}
+  .ing{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+  .ing input{flex:1}
+  .ing input.q{flex:0 0 70px}
+  .ing input.p{flex:0 0 90px}
+  .ing .del{flex:0 0 30px}
+  .hint{font-size:11.5px;color:var(--muted);margin-top:4px}
+  .imgprev{width:100%;height:120px;object-fit:cover;border-radius:10px;border:1px solid var(--line);margin-top:8px;display:none}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 18px;border-radius:10px;font-size:13.5px;font-weight:600;z-index:50;opacity:0;transition:opacity .2s}
+  .toast.show{opacity:1}
+  .login{flex:1;display:flex;align-items:center;justify-content:center;padding:20px}
+  .login .box{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:34px;width:100%;max-width:380px;text-align:center}
+  .login .logo{width:56px;height:56px;border-radius:15px;background:linear-gradient(135deg,var(--pri),#ff9a36);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:26px;margin:0 auto 14px}
+  .muted{color:var(--muted)}
+  .small{font-size:12px}
+  .price{font-weight:700}
+  .num{text-align:right}
+  @media(max-width:640px){.wrap{padding:12px}.grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+  <div class="top" id="top" style="display:none">
+    <div class="logo">S</div>
+    <div>
+      <h1>Sastra Fitmeal · Admin</h1>
+      <div class="muted small">Orders · Sets · Promo · Banners</div>
+    </div>
+    <div class="grow"></div>
+    <button class="btn ghost" onclick="doLogout()">Log out</button>
+  </div>
+
+  <div class="login" id="login">
+    <div class="box">
+      <div class="logo">S</div>
+      <h1>Sastra Fitmeal</h1>
+      <p class="muted small" style="margin-top:4px">Enter the admin passcode to continue</p>
+      <div style="margin-top:18px;text-align:left">
+        <div class="field"><label>Passcode</label><input type="password" id="pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <button class="btn" style="width:100%" onclick="doLogin()">Unlock</button>
+        <div id="loginErr" class="small" style="color:var(--bad);margin-top:10px"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap" id="main" style="display:none">
+    <div class="tabs" id="tabs">
+      <div class="tab on" data-t="dash" onclick="setTab('dash')">Dashboard</div>
+      <div class="tab" data-t="orders" onclick="setTab('orders')">Orders</div>
+      <div class="tab" data-t="sets" onclick="setTab('sets')">Recipe Sets</div>
+      <div class="tab" data-t="promo" onclick="setTab('promo')">Promo</div>
+      <div class="tab" data-t="banner" onclick="setTab('banner')">Banners</div>
+    </div>
+    <div id="view"></div>
+  </div>
+
+  <div id="modalRoot"></div>
+  <div class="toast" id="toast"></div>
+
+<script>
+const API = "https://swxpjxdzkwdilgkbbrnz.supabase.co/functions/v1/meal-admin";
+let PASS = localStorage.getItem("sfm_admin_pass") || "";
+let state = { sets:[], orders:[], stats:{}, promos:[], banners:[], ordersFilter:"" };
+let tab = "dash";
+
+function money(n){ return "៛ " + Number(n||0).toLocaleString("en-US"); }
+function toast(msg, bad){ const t=document.getElementById("toast"); t.textContent=msg; t.style.background=bad?"var(--bad)":"var(--ink)"; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2200); }
+function esc(s){ return String(s??"").replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+async function call(action, body){
+  const r = await fetch(API, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(Object.assign({pass:PASS}, body, {action})) });
+  const j = await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(j.error || ("HTTP "+r.status));
+  return j;
+}
+
+function doLogin(){
+  const p = document.getElementById("pass").value.trim();
+  if(!p){ document.getElementById("loginErr").textContent="Enter the passcode."; return; }
+  call("ping", {}).then(j=>{
+    PASS=p; localStorage.setItem("sfm_admin_pass",p);
+    enter();
+  }).catch(()=>{ document.getElementById("loginErr").textContent="Wrong passcode."; });
+}
+function doLogout(){ PASS=""; localStorage.removeItem("sfm_admin_pass"); document.getElementById("main").style.display="none"; document.getElementById("top").style.display="none"; document.getElementById("login").style.display="flex"; document.getElementById("pass").value=""; document.getElementById("loginErr").textContent=""; }
+function enter(){
+  document.getElementById("login").style.display="none";
+  document.getElementById("main").style.display="block";
+  document.getElementById("top").style.display="flex";
+  refresh();
+}
+function setTab(t){ tab=t; document.querySelectorAll(".tab").forEach(el=>el.classList.toggle("on", el.dataset.t===t)); render(); }
+async function refresh(){
+  try{
+    const [s,o,st,p,b] = await Promise.all([
+      call("sets.list",{}),
+      call("orders.list",{limit:100}),
+      call("orders.stats",{}),
+      call("promos.list",{}),
+      call("banners.list",{}),
+    ]);
+    state.sets=s.sets||[]; state.orders=o.orders||[]; state.stats=st.stats||{}; state.promos=p.promos||[]; state.banners=b.banners||[];
+    render();
+  }catch(e){ toast(e.message, true); }
+}
+function render(){
+  const v = document.getElementById("view");
+  if(tab==="dash") v.innerHTML = viewDash();
+  else if(tab==="orders") v.innerHTML = viewOrders();
+  else if(tab==="sets") v.innerHTML = viewSets();
+  else if(tab==="promo") v.innerHTML = viewPromo();
+  else if(tab==="banner") v.innerHTML = viewBanner();
+}
+
+function viewDash(){
+  const rows = Object.entries(state.stats);
+  const cells = rows.map(([k,v])=>`<div class="card stat"><div class="n">${v.count}</div><div class="l"><span class="chip ${k}">${esc(k.replace("_"," "))}</span> · ${money(v.total)}</div></div>`).join("") || `<div class="card stat"><div class="n">0</div><div class="l">No orders yet</div></div>`;
+  return `<div class="grid" style="margin-bottom:18px">${cells}</div>
+    <div class="card"><h3 style="margin:0 0 10px">Recent orders</h3>
+      <table><thead><tr><th>Ref</th><th>Customer</th><th>Items</th><th class="num">Total</th><th>Status</th><th>Created</th></tr></thead><tbody>
+      ${state.orders.slice(0,8).map(orderRow).join("") || `<tr><td colspan="6" class="muted">No orders yet.</td></tr>`}
+      </tbody></table>
+    </div>`;
+}
+function orderRow(o){
+  const cust = o.customer||{};
+  const items = (o.items||[]).map(i=>`${i.qty}× ${esc(i.set_name||i.set_id)}`).join(", ");
+  return `<tr><td class="small">${esc(o.order_ref)}</td><td class="small">${esc(cust.name||"")}<br><span class="muted">${esc(cust.phone||"")}</span></td>
+    <td class="small">${esc(items)}</td><td class="num price">${money(o.total)}</td>
+    <td><span class="chip ${o.status}">${esc(o.status.replace("_"," "))}</span></td>
+    <td class="small muted">${new Date(o.created_at).toLocaleString()}</td></tr>`;
+}
+function viewOrders(){
+  const f = state.ordersFilter;
+  const list = f ? state.orders.filter(o=>o.status===f) : state.orders;
+  const stats = Object.keys(state.stats);
+  return `<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+    <button class="btn sec sm ${!f?"":"sec"}" onclick="setOF('')" style="${!f?"background:var(--ink);color:#fff":""}">All</button>
+    ${stats.map(s=>`<button class="btn sec sm" onclick="setOF('${s}')" style="${f===s?"background:var(--ink);color:#fff":""}">${esc(s.replace("_"," "))} (${state.stats[s].count})</button>`).join("")}
+  </div>
+  <div class="card"><table><thead><tr><th>Ref</th><th>Customer</th><th>Items</th><th class="num">Total</th><th>Method</th><th>Status</th><th>Set status</th><th>Created</th></tr></thead><tbody>
+  ${list.map(orderRowFull).join("") || `<tr><td colspan="9" class="muted">No orders.</td></tr>`}
+  </tbody></table></div>`;
+}
+function setOF(f){ state.ordersFilter=f; render(); }
+const STATUSES = ["pending","confirmed","preparing","out_for_delivery","delivered","cancelled","expired","failed"];
+function orderRowFull(o){
+  const cust = o.customer||{};
+  const items = (o.items||[]).map(i=>`${i.qty}× ${esc(i.set_name||i.set_id)}`).join(", ");
+  return `<tr><td class="small">${esc(o.order_ref)}</td>
+    <td class="small">${esc(cust.name||"")}<br><span class="muted">${esc(cust.phone||"")}</span><br><span class="muted small">${esc(cust.location||"")}</span></td>
+    <td class="small">${esc(items)}</td><td class="num price">${money(o.total)}</td>
+    <td class="small">${esc(o.payment_method||"")}</td>
+    <td><span class="chip ${o.status}">${esc(o.status.replace("_"," "))}</span></td>
+    <td><select onchange="setStatus('${esc(o.order_ref)}', this.value)" style="width:150px;padding:6px">
+      ${STATUSES.map(s=>`<option value="${s}" ${s===o.status?"selected":""}>${esc(s.replace("_"," "))}</option>`).join("")}
+    </select></td>
+    <td class="small muted">${new Date(o.created_at).toLocaleString()}</td></tr>`;
+}
+async function setStatus(ref, s){
+  try{ await call("orders.update",{order_ref:ref,status:s}); toast("Status updated"); refresh(); }
+  catch(e){ toast(e.message,true); }
+}
+
+function viewSets(){
+  return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <h3 style="margin:0">${state.sets.length} recipe sets</h3>
+    <button class="btn" onclick="openSet()">+ New set</button></div>
+  <div class="grid">
+    ${state.sets.map(s=>`
+      <div class="card" style="display:flex;flex-direction:column;gap:10px">
+        <img src="${esc(s.image_url||'data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22240%22 height=%22140%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%23eef1f6%22/></svg>')}" style="width:100%;height:120px;object-fit:cover;border-radius:10px">
+        <div>
+          <div style="font-weight:750;font-size:14px">${esc(s.name_en)}</div>
+          <div class="muted small" style="font-family:sans-serif">${esc(s.name_km||"")}</div>
+        </div>
+        <div class="row" style="align-items:center">
+          <div><div class="price">${money(s.price)}</div><div class="muted small">stock ${s.stock}</div></div>
+          <div style="text-align:right">
+            <span class="chip ${s.active?'delivered':'failed'}">${s.active?"active":"hidden"}</span>
+            <div class="muted small small">${(s.ingredients||[]).length} ingredients</div>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn sec sm" onclick="openSet('${s.id}')">Edit</button>
+          <button class="btn ghost sm" onclick="delSet('${s.id}')">Delete</button>
+        </div>
+      </div>`).join("")}
+  </div>`;
+}
+function delSet(id){
+  if(!confirm("Delete this set?")) return;
+  call("sets.delete",{id}).then(()=>{ toast("Deleted"); refresh(); }).catch(e=>toast(e.message,true));
+}
+function openSet(id){
+  const s = id ? state.sets.find(x=>x.id===id) : null;
+  const ing = (s?.ingredients||[]);
+  const modal = document.createElement("div"); modal.className="modal"; modal.id="setModal";
+  modal.innerHTML = `<div class="box">
+    <h3 style="margin:0 0 14px">${s?"Edit set":"New recipe set"}</h3>
+    <div class="row">
+      <div class="field"><label>Meal ID (bundled dish)</label><input id="f_meal" value="${esc(s?.meal_id||"")}" placeholder="53495"></div>
+      <div class="field"><label>Price (៛)</label><input id="f_price" type="number" min="0" value="${s?.price??""}"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>Name (English)</label><input id="f_nameen" value="${esc(s?.name_en||"")}"></div>
+      <div class="field"><label>Name (Khmer)</label><input id="f_namekm" value="${esc(s?.name_km||"")}" style="font-family:sans-serif"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>Stock</label><input id="f_stock" type="number" min="0" value="${s?.stock??100}"></div>
+      <div class="field"><label>Sort</label><input id="f_sort" type="number" value="${s?.sort??0}"></div>
+      <div class="field" style="max-width:110px"><label>Active</label><select id="f_active"><option value="1" ${s?.active!==false?"selected":""}>Yes</option><option value="0" ${s?.active===false?"selected":""}>No</option></select></div>
+    </div>
+    <div class="field"><label>Image (URL or upload)</label>
+      <input id="f_img" value="${esc(s?.image_url||"")}">
+      <div class="row" style="margin-top:8px"><button class="btn sec sm" onclick="uploadImg()" style="flex:1">Upload image…</button><button class="btn ghost sm" onclick="useBundleImg()" style="flex:1">Use bundled dish photo</button></div>
+      <img class="imgprev" id="imgprev" alt="">
+    </div>
+    <div style="border-top:1px solid var(--line);padding-top:12px">
+      <div class="row" style="align-items:center;margin-bottom:8px">
+        <b style="font-size:13px">Ingredients</b><div class="grow"></div>
+        <button class="btn sec sm" onclick="addIng()">+ Add</button>
+      </div>
+      <div id="ingList">${ing.map(ingRow).join("") || ""}</div>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn sec" onclick="closeSet()">Cancel</button>
+      <button class="btn" onclick="saveSet('${s?.id||""}')">Save set</button>
+    </div>
+  </div>`;
+  modal.onclick = (e)=>{ if(e.target===modal) closeSet(); };
+  document.getElementById("modalRoot").appendChild(modal);
+  const prev = document.getElementById("imgprev");
+  if(s?.image_url){ prev.src=s.image_url; prev.style.display="block"; }
+}
+function ingRow(i){
+  return `<div class="ing">
+    <input class="n" value="${esc(i?.name_en||"")}" placeholder="Name (EN)">
+    <input class="n km" value="${esc(i?.name_km||"")}" placeholder="ក្រូច" style="font-family:sans-serif">
+    <input class="n u" value="${esc(i?.unit||"")}" placeholder="unit">
+    <input class="q" value="${esc(i?.qty||"")}" placeholder="qty">
+    <input class="p" type="number" step="0.01" value="${i?.unit_price??""}" placeholder="price">
+    <button class="btn ghost del sm" onclick="this.parentElement.remove()">✕</button>
+  </div>`;
+}
+function addIng(){ document.getElementById("ingList").insertAdjacentHTML("beforeend", ingRow({})); }
+function closeSet(){ document.getElementById("setModal")?.remove(); }
+async function uploadImg(){
+  const inp = document.createElement("input"); inp.type="file"; inp.accept="image/*";
+  inp.onchange = async ()=>{
+    const f = inp.files[0]; if(!f) return;
+    if(f.size > 3*1024*1024){ toast("Image must be under 3 MB", true); return; }
+    const b64 = await new Promise(res=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result.split(",")[1]); fr.readAsDataURL(f); });
+    toast("Uploading…");
+    call("set.upload",{data:b64, mime:f.type}).then(j=>{
+      document.getElementById("f_img").value = j.url;
+      const prev=document.getElementById("imgprev"); prev.src=j.url; prev.style.display="block";
+      toast("Uploaded");
+    }).catch(e=>toast(e.message,true));
+  };
+  inp.click();
+}
+function useBundleImg(){
+  const mid = document.getElementById("f_meal").value.trim();
+  if(!mid){ toast("Enter the meal ID first", true); return; }
+  document.getElementById("f_img").value = "";
+  toast("Bundled photo will be used by meal ID");
+}
+function saveSet(id){
+  const ings = [...document.querySelectorAll("#ingList .ing")].map(r=>{
+    const g = s=>r.querySelector(s).value;
+    return { name_en:g(".n:not(.km):not(.u)").value, name_km:g(".n.km").value, unit:g(".n.u").value, qty:g(".q").value, unit_price:g(".p").value };
+  }).filter(i=>i.name_en.trim());
+  const body = { set:{
+    id: id||undefined,
+    meal_id: document.getElementById("f_meal").value.trim(),
+    name_en: document.getElementById("f_nameen").value.trim(),
+    name_km: document.getElementById("f_namekm").value.trim(),
+    price: document.getElementById("f_price").value,
+    stock: document.getElementById("f_stock").value,
+    sort: document.getElementById("f_sort").value,
+    active: document.getElementById("f_active").value==="1",
+    image_url: document.getElementById("f_img").value.trim() || null,
+    ingredients: ings
+  }};
+  call("sets.save", body).then(()=>{ toast("Saved"); closeSet(); refresh(); }).catch(e=>toast(e.message,true));
+}
+
+function viewPromo(){
+  return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <h3 style="margin:0">Promo codes</h3><button class="btn" onclick="openPromo()">+ New promo</button></div>
+  <div class="card"><table><thead><tr><th>Code</th><th>Discount</th><th>Min spend</th><th>Cap</th><th>Expires</th><th>Status</th><th></th></tr></thead><tbody>
+  ${state.promos.map(p=>`<tr>
+    <td class="price">${esc(p.code)}</td>
+    <td>${p.kind==="percent"?esc(p.value)+"%":money(p.value)}</td>
+    <td>${money(p.min_amount)}</td><td>${p.max_discount!=null?money(p.max_discount):"—"}</td>
+    <td class="small muted">${p.expires_at?new Date(p.expires_at).toLocaleDateString():"—"}</td>
+    <td><span class="chip ${p.active?'delivered':'failed'}">${p.active?"active":"off"}</span></td>
+    <td style="text-align:right"><button class="btn sec sm" onclick="openPromo('${p.id}')">Edit</button> <button class="btn ghost sm" onclick="delPromo('${p.id}')">✕</button></td>
+  </tr>`).join("") || `<tr><td colspan="7" class="muted">No promos.</td></tr>`}
+  </tbody></table></div>`;
+}
+function delPromo(id){ if(!confirm("Delete promo?")) return; call("promo.delete",{id}).then(()=>{toast("Deleted");refresh();}).catch(e=>toast(e.message,true)); }
+function openPromo(id){
+  const p = id ? state.promos.find(x=>x.id===id) : null;
+  const modal = document.createElement("div"); modal.className="modal"; modal.id="promoModal";
+  modal.innerHTML = `<div class="box">
+    <h3 style="margin:0 0 14px">${p?"Edit promo":"New promo"}</h3>
+    <div class="row">
+      <div class="field"><label>Code</label><input id="p_code" value="${esc(p?.code||"")}"></div>
+      <div class="field"><label>Type</label><select id="p_kind"><option value="percent" ${p?.kind!=="fixed"?"selected":""}>Percent %</option><option value="fixed" ${p?.kind==="fixed"?"selected":""}>Fixed ៛</option></select></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>Value</label><input id="p_val" type="number" value="${p?.value??15}"></div>
+      <div class="field"><label>Min spend (៛)</label><input id="p_min" type="number" value="${p?.min_amount??0}"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>Max discount cap (៛, blank = none)</label><input id="p_cap" type="number" value="${p?.max_discount??""}"></div>
+      <div class="field"><label>Expires (blank = never)</label><input id="p_exp" type="date" value="${p?.expires_at?String(p.expires_at).slice(0,10):""}"></div>
+      <div class="field" style="max-width:110px"><label>Active</label><select id="p_act"><option value="1" ${p?.active!==false?"selected":""}>Yes</option><option value="0" ${p?.active===false?"selected":""}>No</option></select></div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn sec" onclick="document.getElementById('promoModal').remove()">Cancel</button>
+      <button class="btn" onclick="savePromo('${p?.id||""}')">Save promo</button>
+    </div>
+  </div>`;
+  modal.onclick=(e)=>{ if(e.target===modal) modal.remove(); };
+  document.getElementById("modalRoot").appendChild(modal);
+}
+function savePromo(id){
+  const exp = document.getElementById("p_exp").value;
+  call("promo.save",{promo:{
+    id:id||undefined,
+    code:document.getElementById("p_code").value,
+    kind:document.getElementById("p_kind").value,
+    value:document.getElementById("p_val").value,
+    min_amount:document.getElementById("p_min").value,
+    max_discount:document.getElementById("p_cap").value===""?null:document.getElementById("p_cap").value,
+    expires_at:exp?exp+"T00:00:00Z":null,
+    active:document.getElementById("p_act").value==="1"
+  }}).then(()=>{ toast("Saved"); document.getElementById("promoModal").remove(); refresh(); }).catch(e=>toast(e.message,true));
+}
+
+function viewBanner(){
+  return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <h3 style="margin:0">Banners</h3><button class="btn" onclick="openBanner()">+ New banner</button></div>
+  <div class="grid">${state.banners.map(b=>`
+    <div class="card" style="display:flex;flex-direction:column;gap:10px">
+      <img src="${esc(b.image_url)}" style="width:100%;height:120px;object-fit:cover;border-radius:10px" onerror="this.style.display='none'">
+      <div><div style="font-weight:750;font-size:14px">${esc(b.title_en||"(no title)")}</div>
+      <div class="muted small">${esc(b.subtitle_en||"")}</div></div>
+      <div class="row"><span class="chip ${b.active?'delivered':'failed'}">${b.active?"active":"off"}</span>
+      <div class="grow"></div><span class="muted small">sort ${b.sort??0}</span></div>
+      <div class="row">
+        <button class="btn sec sm" onclick="openBanner('${b.id}')">Edit</button>
+        <button class="btn ghost sm" onclick="delBanner('${b.id}')">Delete</button>
+      </div>
+    </div>`).join("") || `<div class="card muted">No banners yet.</div>`}
+  </div>`;
+}
+function delBanner(id){ if(!confirm("Delete banner?")) return; call("banner.delete",{id}).then(()=>{toast("Deleted");refresh();}).catch(e=>toast(e.message,true)); }
+function openBanner(id){
+  const b = id ? state.banners.find(x=>x.id===id) : null;
+  const modal = document.createElement("div"); modal.className="modal"; modal.id="bannerModal";
+  modal.innerHTML = `<div class="box">
+    <h3 style="margin:0 0 14px">${b?"Edit banner":"New banner"}</h3>
+    <div class="field"><label>Image URL</label><input id="b_img" value="${esc(b?.image_url||"")}">
+      <div class="row" style="margin-top:8px"><button class="btn sec sm" onclick="uploadBanner()" style="flex:1">Upload image…</button></div>
+      <img class="imgprev" id="bprev" alt="${esc(b?.image_url||"")}" ${b?.image_url?`src="${esc(b.image_url)}"`:""} style="${b?.image_url?"":"display:none"}"></div>
+    <div class="row">
+      <div class="field"><label>Title (EN)</label><input id="b_ten" value="${esc(b?.title_en||"")}"></div>
+      <div class="field"><label>Title (KH)</label><input id="b_tkm" value="${esc(b?.title_km||"")}" style="font-family:sans-serif"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>Subtitle (EN)</label><input id="b_sen" value="${esc(b?.subtitle_en||"")}"></div>
+      <div class="field"><label>Subtitle (KH)</label><input id="b_skm" value="${esc(b?.subtitle_km||"")}" style="font-family:sans-serif"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>Link</label><input id="b_link" value="${esc(b?.link||"")}"></div>
+      <div class="field"><label>Sort</label><input id="b_sort" type="number" value="${b?.sort??0}"></div>
+      <div class="field" style="max-width:110px"><label>Active</label><select id="b_act"><option value="1" ${b?.active!==false?"selected":""}>Yes</option><option value="0" ${b?.active===false?"selected":""}>No</option></select></div>
+    </div>
+    <div class="field"><label>Expires (blank = never)</label><input id="b_exp" type="date" value="${b?.expires_at?String(b.expires_at).slice(0,10):""}"></div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn sec" onclick="document.getElementById('bannerModal').remove()">Cancel</button>
+      <button class="btn" onclick="saveBanner('${b?.id||""}')">Save banner</button>
+    </div>
+  </div>`;
+  modal.onclick=(e)=>{ if(e.target===modal) modal.remove(); };
+  document.getElementById("modalRoot").appendChild(modal);
+}
+function uploadBanner(){
+  const inp=document.createElement("input"); inp.type="file"; inp.accept="image/*";
+  inp.onchange=async ()=>{
+    const f=inp.files[0]; if(!f) return;
+    if(f.size>3*1024*1024){ toast("Image under 3 MB",true); return; }
+    const b64=await new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result.split(",")[1]);fr.readAsDataURL(f);});
+    toast("Uploading…");
+    call("set.upload",{data:b64,mime:f.type}).then(j=>{
+      document.getElementById("b_img").value=j.url;
+      const p=document.getElementById("bprev"); p.src=j.url; p.style.display="block";
+      toast("Uploaded");
+    }).catch(e=>toast(e.message,true));
+  };
+  inp.click();
+}
+function saveBanner(id){
+  const exp=document.getElementById("b_exp").value;
+  call("banner.save",{banner:{
+    id:id||undefined,
+    image_url:document.getElementById("b_img").value.trim(),
+    title_en:document.getElementById("b_ten").value.trim(),
+    title_km:document.getElementById("b_tkm").value.trim(),
+    subtitle_en:document.getElementById("b_sen").value.trim(),
+    subtitle_km:document.getElementById("b_skm").value.trim(),
+    link:document.getElementById("b_link").value.trim(),
+    sort:document.getElementById("b_sort").value,
+    expires_at:exp?exp+"T00:00:00Z":null,
+    active:document.getElementById("b_act").value==="1"
+  }}).then(()=>{ toast("Saved"); document.getElementById("bannerModal").remove(); refresh(); }).catch(e=>toast(e.message,true));
+}
+
+// Auto-enter if we have a stored passcode
+if(PASS){ enter(); }
+</script>
+</body>
+</html>

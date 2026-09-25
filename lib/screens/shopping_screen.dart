@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../i18n/localizations.dart';
+import '../models/meal.dart';
 import '../state/app_state.dart';
 import '../theme.dart';
 
@@ -10,6 +11,7 @@ class ShoppingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final st = context.watch<AppState>();
+    final kh = context.useKhmer;
     final items = st.shoppingItems;
     final done = items.where((i) => i.checked).length;
     return Scaffold(
@@ -98,6 +100,26 @@ class ShoppingScreen extends StatelessWidget {
                       separatorBuilder: (_, __) => const SizedBox(height: 8),
                       itemBuilder: (_, i) {
                         final it = items[i];
+                        // Re-derive display names in the current locale
+                        // (items were stored in English at add-time).
+                        String itemName = it.name;
+                        String mealName = it.mealName;
+                        final parts = it.key.split('|');
+                        if (parts.isNotEmpty) {
+                          final m = MealApi.lookup(parts[0]);
+                          if (m != null) {
+                            mealName = m.nameIn(kh);
+                            if (it.name.isNotEmpty) {
+                              final ing = m.ingredients.firstWhere(
+                                  (e) => e.name == it.name,
+                                  orElse: () =>
+                                      const Ingredient('', ''));
+                              if (ing.name.isNotEmpty) {
+                                itemName = m.ingNameIn(kh, ing);
+                              }
+                            }
+                          }
+                        }
                         return Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 14, vertical: 13),
@@ -127,7 +149,7 @@ class ShoppingScreen extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      it.name,
+                                      itemName,
                                       style: TextStyle(height: 1.4, 
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600,
@@ -140,7 +162,7 @@ class ShoppingScreen extends StatelessWidget {
                                               : null),
                                     ),
                                     const SizedBox(height: 2),
-                                    Text(it.mealName,
+                                    Text(mealName,
                                         style: const TextStyle(height: 1.4, 
                                             fontSize: 12, color: C.muted)),
                                   ],

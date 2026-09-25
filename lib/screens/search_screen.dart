@@ -289,7 +289,7 @@ class _ResultRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(meal.name,
+                  Text(meal.nameIn(context.useKhmer),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(height: 1.4, 

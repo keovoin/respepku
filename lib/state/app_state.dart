@@ -44,6 +44,11 @@ class AppState extends ChangeNotifier {
   final Set<String> _checked = {};
   final Map<String, String> _mealNames = {};
 
+  /// Last checkout profile (prefills the cart form on next order).
+  String customerName = '';
+  String customerPhone = '';
+  int customerTime = 0;
+
   SharedPreferences? _prefs;
 
   Future<void> init() async {
@@ -86,6 +91,9 @@ class AppState extends ChangeNotifier {
             (jsonDecode(namesRaw) as Map<String, dynamic>).map(
                 (k, v) => MapEntry(k, v.toString())));
       }
+      customerName = p.getString('cust_name') ?? '';
+      customerPhone = p.getString('cust_phone') ?? '';
+      customerTime = p.getInt('cust_time') ?? 0;
     } catch (_) {
       // corrupt data — start fresh
       _favorites.clear();
@@ -104,6 +112,9 @@ class AppState extends ChangeNotifier {
       await p.setString('shopping_listed', jsonEncode(_listed.toList()));
       await p.setString('shopping_checked', jsonEncode(_checked.toList()));
       await p.setString('shopping_names', jsonEncode(_mealNames));
+      await p.setString('cust_name', customerName);
+      await p.setString('cust_phone', customerPhone);
+      await p.setInt('cust_time', customerTime);
     } catch (_) {
       // storage failure — keep working in memory
     }
@@ -123,6 +134,14 @@ class AppState extends ChangeNotifier {
       _favorites.remove(m.id);
     }
     notifyListeners();
+    _save();
+  }
+
+  // ---------- customer profile ----------
+  void saveCustomer(String name, String phone, int time) {
+    customerName = name;
+    customerPhone = phone;
+    customerTime = time;
     _save();
   }
 

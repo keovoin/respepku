@@ -3,8 +3,10 @@ import 'package:provider/provider.dart';
 import '../i18n/localizations.dart';
 import '../models/meal.dart';
 import '../state/app_state.dart';
+import '../state/shop_state.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
+import 'cart_screen.dart';
 
 /// Localized difficulty label (API returns Indonesian values).
 String _diff(BuildContext context, String? d) {
@@ -35,10 +37,13 @@ class _DetailScreenState extends State<DetailScreen> {
   @override
   Widget build(BuildContext context) {
     final st = context.watch<AppState>();
+    final shop = context.watch<ShopState>();
+    final kh = context.useKhmer;
     final m = widget.meal;
     final fav = st.isFavorite(m.id);
+    final set = shop.setForMeal(m.id);
     return DefaultTabController(
-      length: 4,
+      length: shop.loaded ? 5 : 4,
       child: Scaffold(
       backgroundColor: C.bg,
       body: CustomScrollView(
@@ -93,7 +98,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     children: [
                       Expanded(
                         child: Text(
-                          m.name,
+                          m.nameIn(kh),
                           style: const TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.w800,
@@ -143,6 +148,9 @@ class _DetailScreenState extends State<DetailScreen> {
                     runSpacing: 8,
                     children: [
                       _MetaPill(
+                          icon: Icons.category,
+                          label: context.t(catKey(m.category))),
+                      _MetaPill(
                           icon: Icons.timer_outlined,
                           label: context.t('minutes', n: '${m.minutes ?? 20}')),
                       _MetaPill(
@@ -150,6 +158,10 @@ class _DetailScreenState extends State<DetailScreen> {
                       _MetaPill(
                           icon: Icons.groups_outlined,
                           label: context.t('servings', n: '${m.servings ?? 2}')),
+                      if (set != null)
+                        _MetaPill(
+                            icon: Icons.price_change,
+                            label: shop.money(set.price)),
                     ],
                   ),
                   const SizedBox(height: 14),
@@ -196,6 +208,7 @@ class _DetailScreenState extends State<DetailScreen> {
                         Tab(text: context.t('tab_steps')),
                         Tab(text: context.t('tab_nutri')),
                         Tab(text: context.t('tab_reviews')),
+                        if (shop.loaded) Tab(text: context.t('tab_buy')),
                       ],
                     ),
                   ),
@@ -207,6 +220,7 @@ class _DetailScreenState extends State<DetailScreen> {
                         _StepsTab(meal: m),
                         _NutritionTab(meal: m),
                         _ReviewsTab(meal: m),
+                        if (shop.loaded) _BuyTab(meal: m),
                       ],
                     ),
                   ),
@@ -308,8 +322,9 @@ class _IngredientsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final st = context.watch<AppState>();
-    final ing = meal.ingredients;
-    final bumbu = meal.bumbu;
+    final kh = context.useKhmer;
+    final ing = meal.ingredientsIn(kh);
+    final bumbu = kh ? <Ingredient>[] : meal.bumbu;
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       children: [
@@ -405,9 +420,11 @@ class _StepsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final kh = context.useKhmer;
+    final steps = meal.stepsIn(kh);
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-      itemCount: meal.steps.length,
+      itemCount: steps.length,
       separatorBuilder: (_, __) => const SizedBox(height: 12),
       itemBuilder: (_, i) {
         return Container(
@@ -437,7 +454,7 @@ class _StepsTab extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Text(meal.steps[i],
+                child: Text(steps[i],
                     style: const TextStyle(
                         fontSize: 14, color: C.ink, height: 1.5)),
               ),
@@ -522,11 +539,15 @@ class _ReviewsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final kh = context.useKhmer;
     final rating = meal.rating ?? 4.8;
     final reviews = [
-      ('Sari W.', '4.9', context.t('rev_1'), context.t('days_ago')),
-      ('Budi H.', '4.7', context.t('rev_2'), context.t('week_ago')),
-      ('Dewi A.', '4.8', context.t('rev_3'), context.t('weeks_ago')),
+      (kh ? 'សុភា ឃ.' : 'Sari W.', '4.9', context.t('rev_1'),
+          context.t('days_ago')),
+      (kh ? 'សុបាត ហ.' : 'Budi H.', '4.7', context.t('rev_2'),
+          context.t('week_ago')),
+      (kh ? 'ដេវី អ.' : 'Dewi A.', '4.8', context.t('rev_3'),
+          context.t('weeks_ago')),
     ];
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
@@ -666,18 +687,199 @@ class _AddAllButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final st = context.read<AppState>();
+    final addedMsg = context.t('added_snack');
+    final addLabel = context.t('add_shop');
     return FloatingActionButton.extended(
       onPressed: () {
         st.addRecipe(meal);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.t('added_snack'))),
+          SnackBar(content: Text(addedMsg)),
         );
       },
       backgroundColor: C.primary,
       foregroundColor: Colors.white,
-      label: Text(context.t('add_shop'),
+      label: Text(addLabel,
           style: const TextStyle(height: 1.4, fontWeight: FontWeight.w700)),
       icon: const Icon(Icons.shopping_bag, size: 18),
+    );
+  }
+}
+
+/// "Buy set" tab: order the full ingredient set for this recipe.
+class _BuyTab extends StatelessWidget {
+  final Meal meal;
+  const _BuyTab({required this.meal});
+
+  @override
+  Widget build(BuildContext context) {
+    final shop = context.watch<ShopState>();
+    final kh = context.useKhmer;
+    final set = shop.setForMeal(meal.id);
+    if (set == null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Text(context.t('not_sellable'),
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                  height: 1.4, fontSize: 14, color: C.muted)),
+        ),
+      );
+    }
+    final qty = shop.cartQty(set.id);
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      children: [
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: C.card,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: C.line),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: MealImage(meal: meal, width: 72, height: 72),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(set.name(kh),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(height: 1.4,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: C.ink)),
+                        const SizedBox(height: 4),
+                        Text(shop.money(set.price),
+                            style: const TextStyle(height: 1.4,
+                                fontSize: 17,
+                                fontWeight: FontWeight.w800,
+                                color: C.primary)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              if (set.desc(kh).isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Text(set.desc(kh),
+                      style: const TextStyle(
+                          height: 1.4, fontSize: 13, color: C.muted)),
+                ),
+              Text(context.t('stock'),
+                  style: const TextStyle(height: 1.4,
+                      fontSize: 12, color: C.muted)),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  _QtyBtn(icon: Icons.remove, onPressed: () {
+                    if (qty > 0) shop.setQty(set, qty - 1);
+                  }),
+                  const SizedBox(width: 10),
+                  Text('$qty',
+                      style: const TextStyle(height: 1.4,
+                          fontSize: 15, fontWeight: FontWeight.w800)),
+                  const SizedBox(width: 10),
+                  _QtyBtn(icon: Icons.add, enabled: qty < set.stock,
+                      onPressed: () {
+                    if (qty < set.stock) shop.setQty(set, qty + 1);
+                  }),
+                  const Spacer(),
+                  Expanded(
+                    child: FilledButton.icon(
+                      style: FilledButton.styleFrom(
+                          backgroundColor: C.primary,
+                          padding: const EdgeInsets.symmetric(vertical: 12)),
+                      onPressed: () {
+                        if (qty == 0) shop.addToCart(set);
+                        Navigator.popUntil(
+                            context, (r) => r.settings.name == '/');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const CartScreen()),
+                        );
+                      },
+                      icon: const Icon(Icons.shopping_cart, size: 18),
+                      label: Text(
+                          qty == 0 ? context.t('buy_set') : context.t('go_cart'),
+                          style: const TextStyle(height: 1.4,
+                              fontWeight: FontWeight.w700)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        // what's inside the set
+        if (set.ingredients.isNotEmpty) ...[
+          _GroupHeader(context.t('in_set')),
+          ...set.ingredients.map(
+                (e) => Container(
+                  margin: const EdgeInsets.only(bottom: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: C.card,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: C.line),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(e['name'].toString(),
+                            style: const TextStyle(
+                                height: 1.4, fontSize: 13.5, color: C.ink)),
+                      ),
+                      Text(e['measure'].toString(),
+                          style: const TextStyle(height: 1.4,
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w700,
+                              color: C.primaryDark)),
+                    ],
+                  ),
+                ),
+              ),
+        ],
+      ],
+    );
+  }
+}
+
+class _QtyBtn extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback? onPressed;
+  final bool enabled;
+  const _QtyBtn(
+      {required this.icon, required this.onPressed, this.enabled = true});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 34,
+      height: 34,
+      decoration: BoxDecoration(
+        color: C.primarySoft,
+        shape: BoxShape.circle,
+      ),
+      child: IconButton(
+        visualDensity: VisualDensity.compact,
+        icon: Icon(icon, size: 18,
+            color: enabled ? C.primaryDark : C.muted.withOpacity(0.5)),
+        onPressed: enabled ? onPressed : null,
+      ),
     );
   }
 }

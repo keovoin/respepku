@@ -48,6 +48,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final featured = getFeaturedMeal();
+    final kh = context.useKhmer;
+    final rating = featured.rating ?? 4.8;
+    final count = featured.ratingsCount ?? 0;
     return Scaffold(
       backgroundColor: C.bg,
       body: ListView(
@@ -116,6 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
+          const ShopBannerCarousel(),
           // ---- Featured banner ----
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
@@ -157,19 +161,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                     color: Colors.white)),
                           ),
                           const SizedBox(height: 10),
-                          Text(featured.name,
+                          Text(featured.nameIn(kh),
                               style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white,
                                   height: 1.2)),
                           const SizedBox(height: 8),
-                          const Row(
+                          Row(
                             children: [
-                              Icon(Icons.star, size: 16, color: Colors.white),
-                              SizedBox(width: 4),
-                              Text('4.8 (320)',
-                                  style: TextStyle(height: 1.4, 
+                              const Icon(Icons.star, size: 16, color: Colors.white),
+                              const SizedBox(width: 4),
+                              Text('${rating.toStringAsFixed(1)} ($count)',
+                                  style: const TextStyle(height: 1.4, 
                                       fontSize: 12, color: Colors.white70)),
                             ],
                           ),
@@ -272,6 +276,8 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: _ContinueCard(meal: featured, onTap: () => _openDetail(featured)),
           ),
+          const SizedBox(height: 8),
+          const StoreSection(),
         ],
       ),
     );
