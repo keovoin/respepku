@@ -97,7 +97,7 @@ class _ShellState extends State<Shell> {
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 220),
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 8),
+                        horizontal: 16, vertical: 9),
                     decoration: BoxDecoration(
                       color:
                           active ? C.primarySoft : Colors.transparent,
@@ -114,8 +114,10 @@ class _ShellState extends State<Shell> {
                         const SizedBox(height: 3),
                         Text(
                           context.t(_tabKeys[i]),
-                          style: TextStyle(
-                              fontSize: 10,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(height: 1.4, 
+                              fontSize: 12,
                               fontWeight: active
                                   ? FontWeight.w700
                                   : FontWeight.w500,

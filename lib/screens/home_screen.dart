@@ -70,9 +70,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(context.t('greeting'),
-                          style: const TextStyle(fontSize: 12, color: C.muted)),
+                          style: const TextStyle(height: 1.4, fontSize: 12, color: C.muted)),
                       Text('${context.t('hi')}, Sastra',
-                          style: const TextStyle(
+                          style: const TextStyle(height: 1.4, 
                               fontSize: 19,
                               fontWeight: FontWeight.w800,
                               color: C.ink)),
@@ -110,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const Icon(Icons.search, color: C.muted, size: 20),
                     const SizedBox(width: 10),
                     Text(context.t('search_hint'),
-                        style: const TextStyle(color: C.muted, fontSize: 14)),
+                        style: const TextStyle(height: 1.4, color: C.muted, fontSize: 14)),
                   ],
                 ),
               ),
@@ -151,8 +151,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(context.t('featured_badge'),
-                                style: const TextStyle(
-                                    fontSize: 11,
+                                style: const TextStyle(height: 1.4, 
+                                    fontSize: 12,
                                     fontWeight: FontWeight.w700,
                                     color: Colors.white)),
                           ),
@@ -169,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               Icon(Icons.star, size: 16, color: Colors.white),
                               SizedBox(width: 4),
                               Text('4.8 (320)',
-                                  style: TextStyle(
+                                  style: TextStyle(height: 1.4, 
                                       fontSize: 12, color: Colors.white70)),
                             ],
                           ),
@@ -185,7 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(context.t('cook_now'),
-                                    style: const TextStyle(
+                                    style: const TextStyle(height: 1.4, 
                                         fontSize: 12,
                                         fontWeight: FontWeight.w700,
                                         color: C.primaryDark)),
@@ -242,7 +242,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const CircularProgressIndicator(strokeWidth: 2.5, color: C.primary),
                   const SizedBox(width: 10),
                   Text(context.t('loading'),
-                      style: const TextStyle(color: C.muted)),
+                      style: const TextStyle(height: 1.4, color: C.muted)),
                 ],
               ),
             )
@@ -250,7 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(context.t('load_failed'),
-                  style: const TextStyle(color: C.muted)),
+                  style: const TextStyle(height: 1.4, color: C.muted)),
             )
           else
             SizedBox(
@@ -299,8 +299,7 @@ class _CategoryChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 66,
-        padding: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           color: C.card,
           borderRadius: BorderRadius.circular(16),
@@ -316,14 +315,12 @@ class _CategoryChip extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Center(
-                  child: Text(cat.emoji, style: const TextStyle(fontSize: 20))),
+                  child: Text(cat.emoji, style: const TextStyle(height: 1.4, fontSize: 20))),
             ),
             const SizedBox(height: 6),
-            FittedBox(
-              child: Text(cat.name,
-                  maxLines: 1,
-                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: C.ink)),
-            ),
+            Text(cat.name,
+                maxLines: 1,
+                style: const TextStyle(height: 1.4, fontSize: 12, fontWeight: FontWeight.w600, color: C.ink)),
           ],
         ),
       ),
@@ -359,13 +356,13 @@ class _ContinueCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(context.t('featured_name'),
-                      style: const TextStyle(
+                      style: const TextStyle(height: 1.4, 
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                           color: C.ink)),
                   const SizedBox(height: 4),
                   Text(context.t('step_of', a: '3', b: '7'),
-                      style: const TextStyle(fontSize: 12, color: C.muted)),
+                      style: const TextStyle(height: 1.4, fontSize: 12, color: C.muted)),
                   const SizedBox(height: 6),
                   const LinearProgressIndicator(
                       value: 0.45,

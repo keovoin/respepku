@@ -18,7 +18,7 @@ class AccountScreen extends StatelessWidget {
         elevation: 0,
         titleSpacing: 20,
         title: Text(context.t('account'),
-            style: const TextStyle(
+            style: const TextStyle(height: 1.4, 
                 fontSize: 18, fontWeight: FontWeight.w800, color: C.ink)),
       ),
       body: SafeArea(
@@ -55,13 +55,13 @@ class AccountScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Sastra Digital Innovation',
-                            style: TextStyle(
+                            style: TextStyle(height: 1.4, 
                                 fontSize: 17,
                                 fontWeight: FontWeight.w800,
                                 color: Colors.white)),
                         SizedBox(height: 3),
                         Text('sastra@sastra.dev',
-                            style: TextStyle(
+                            style: TextStyle(height: 1.4, 
                                 fontSize: 12, color: Colors.white70)),
                       ],
                     ),
@@ -98,13 +98,13 @@ class AccountScreen extends StatelessWidget {
                   Row(
                     children: [
                       Text(context.t('weekly'),
-                          style: const TextStyle(
+                          style: const TextStyle(height: 1.4, 
                               fontSize: 14,
                               fontWeight: FontWeight.w800,
                               color: C.ink)),
                       const Spacer(),
                       const Text('62%',
-                          style: TextStyle(
+                          style: TextStyle(height: 1.4, 
                               fontSize: 13,
                               fontWeight: FontWeight.w800,
                               color: C.primaryDark)),
@@ -122,7 +122,7 @@ class AccountScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(context.t('weekly_sub'),
-                      style: const TextStyle(fontSize: 11.5, color: C.muted)),
+                      style: const TextStyle(height: 1.4, fontSize: 12, color: C.muted)),
                 ],
               ),
             ),
@@ -144,7 +144,7 @@ class AccountScreen extends StatelessWidget {
                             color: C.primary),
                         const SizedBox(width: 14),
                         Text(context.t('lang_title'),
-                            style: const TextStyle(
+                            style: const TextStyle(height: 1.4, 
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
                                 color: C.ink)),
@@ -161,7 +161,7 @@ class AccountScreen extends StatelessWidget {
                         child: Row(
                           children: [
                             Text(i18n.label(l),
-                                style: TextStyle(
+                                style: TextStyle(height: 1.4, 
                                     fontSize: 14,
                                     fontWeight: i18n.locale == l
                                         ? FontWeight.w700
@@ -233,10 +233,10 @@ class _StatCard extends StatelessWidget {
         child: Column(
           children: [
             Text(value,
-                style: const TextStyle(
+                style: const TextStyle(height: 1.4, 
                     fontSize: 17, fontWeight: FontWeight.w800, color: C.ink)),
             const SizedBox(height: 2),
-            Text(label, style: const TextStyle(fontSize: 11.5, color: C.muted)),
+            Text(label, style: const TextStyle(height: 1.4, fontSize: 12, color: C.muted)),
           ],
         ),
       ),
@@ -275,7 +275,7 @@ class _MenuGroup extends StatelessWidget {
                     const SizedBox(width: 14),
                     Expanded(
                       child: Text(items[i].$2,
-                          style: const TextStyle(
+                          style: const TextStyle(height: 1.4, 
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
                               color: C.ink)),

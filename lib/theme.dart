@@ -22,11 +22,32 @@ class C {
   static const redSoft = Color(0xFFFDEBEB);
 }
 
+/// Khmer glyphs stack subscripts and diacritics above/below the body —
+/// the default Material line height clips them. This helper gives Khmer
+/// text room to breathe at every size.
+TextStyle khmerSafe({
+  required TextStyle base,
+  double height = 1.45,
+}) =>
+    base.copyWith(height: base.height ?? height);
+
+/// Minimum legible size for Khmer UI text.
+const double kKhmerMinSize = 12;
+
 ThemeData appTheme() {
   final base = ThemeData(
     useMaterial3: true,
     scaffoldBackgroundColor: C.bg,
     colorScheme: ColorScheme.fromSeed(seedColor: C.primary, surface: C.bg),
+    // Default body style: generous line height so Khmer never clips,
+    // even on widgets that don't set their own height.
+    textTheme: const TextTheme(
+      bodySmall: TextStyle(height: 1.4),
+      bodyMedium: TextStyle(height: 1.4),
+      bodyLarge: TextStyle(height: 1.4),
+      labelSmall: TextStyle(height: 1.3),
+      labelMedium: TextStyle(height: 1.3),
+    ),
   );
   return base.copyWith(
     appBarTheme: const AppBarTheme(
@@ -35,7 +56,8 @@ ThemeData appTheme() {
       scrolledUnderElevation: 0,
       centerTitle: false,
       foregroundColor: C.ink,
-      titleTextStyle: TextStyle(color: C.ink, fontSize: 18, fontWeight: FontWeight.w800),
+      titleTextStyle:
+          TextStyle(color: C.ink, fontSize: 18, fontWeight: FontWeight.w800),
     ),
     dividerTheme: const DividerThemeData(color: C.line, thickness: 1),
     snackBarTheme: const SnackBarThemeData(behavior: SnackBarBehavior.floating),

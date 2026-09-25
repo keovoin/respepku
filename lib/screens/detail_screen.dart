@@ -127,18 +127,20 @@ class _DetailScreenState extends State<DetailScreen> {
                         const Icon(Icons.star, size: 16, color: C.amber),
                         const SizedBox(width: 4),
                         Text(m.rating!.toStringAsFixed(1),
-                            style: const TextStyle(
+                            style: const TextStyle(height: 1.4, 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w700,
                                 color: C.ink)),
                         const SizedBox(width: 6),
                         Text(context.t('review_count', n: '${m.ratingsCount ?? 320}'),
-                            style: const TextStyle(fontSize: 12, color: C.muted)),
+                            style: const TextStyle(height: 1.4, fontSize: 12, color: C.muted)),
                       ],
                     ],
                   ),
                   const SizedBox(height: 12),
-                  Row(
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
                     children: [
                       _MetaPill(
                           icon: Icons.timer_outlined,
@@ -185,9 +187,9 @@ class _DetailScreenState extends State<DetailScreen> {
                       labelColor: C.primary,
                       unselectedLabelColor: C.muted,
                       indicatorColor: C.primary,
-                      labelStyle: const TextStyle(
+                      labelStyle: const TextStyle(height: 1.4, 
                           fontSize: 13.5, fontWeight: FontWeight.w700),
-                      unselectedLabelStyle: const TextStyle(
+                      unselectedLabelStyle: const TextStyle(height: 1.4, 
                           fontSize: 13.5, fontWeight: FontWeight.w600),
                       tabs: [
                         Tab(text: context.t('tab_ing')),
@@ -260,7 +262,6 @@ class _MetaPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(right: 8),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: C.card,
@@ -273,7 +274,7 @@ class _MetaPill extends StatelessWidget {
           Icon(icon, size: 16, color: C.primary),
           const SizedBox(width: 6),
           Text(label,
-              style: const TextStyle(
+              style: const TextStyle(height: 1.4, 
                   fontSize: 13, fontWeight: FontWeight.w600, color: C.ink)),
         ],
       ),
@@ -291,10 +292,10 @@ class _Nutri extends StatelessWidget {
     return Column(
       children: [
         Text(value,
-            style: const TextStyle(
+            style: const TextStyle(height: 1.4, 
                 fontSize: 15, fontWeight: FontWeight.w800, color: C.ink)),
         const SizedBox(height: 2),
-        Text(label, style: const TextStyle(fontSize: 11, color: C.muted)),
+        Text(label, style: const TextStyle(height: 1.4, fontSize: 12, color: C.muted)),
       ],
     );
   }
@@ -340,7 +341,7 @@ class _GroupHeader extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Text(text,
-          style: const TextStyle(
+          style: const TextStyle(height: 1.4, 
               fontSize: 14,
               fontWeight: FontWeight.w800,
               color: C.primaryDark)),
@@ -379,7 +380,7 @@ class _IngRow extends StatelessWidget {
             Expanded(
               child: Text(
                 ing.name,
-                style: TextStyle(
+                style: TextStyle(height: 1.4, 
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                     color: checked ? C.muted : C.ink,
@@ -387,7 +388,7 @@ class _IngRow extends StatelessWidget {
               ),
             ),
             Text(ing.label,
-                style: const TextStyle(
+                style: const TextStyle(height: 1.4, 
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     color: C.primaryDark)),
@@ -428,7 +429,7 @@ class _StepsTab extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text('${i + 1}',
-                      style: const TextStyle(
+                      style: const TextStyle(height: 1.4, 
                           fontSize: 13,
                           fontWeight: FontWeight.w800,
                           color: C.primaryDark)),
@@ -492,12 +493,12 @@ class _NutritionTab extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(r.$1,
-                          style: const TextStyle(
+                          style: const TextStyle(height: 1.4, 
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
                               color: C.muted)),
                       Text(r.$2,
-                          style: const TextStyle(
+                          style: const TextStyle(height: 1.4, 
                               fontSize: 16,
                               fontWeight: FontWeight.w800,
                               color: C.ink)),
@@ -509,7 +510,7 @@ class _NutritionTab extends StatelessWidget {
           ),
         const SizedBox(height: 8),
         Text(context.t('nut_per'),
-            style: const TextStyle(fontSize: 11, color: C.muted)),
+            style: const TextStyle(height: 1.4, fontSize: 12, color: C.muted)),
       ],
     );
   }
@@ -542,7 +543,7 @@ class _ReviewsTab extends StatelessWidget {
               Column(
                 children: [
                   Text(rating.toStringAsFixed(1),
-                      style: const TextStyle(
+                      style: const TextStyle(height: 1.4, 
                           fontSize: 34,
                           fontWeight: FontWeight.w800,
                           color: C.ink)),
@@ -556,7 +557,7 @@ class _ReviewsTab extends StatelessWidget {
                     ],
                   ),
                   Text(context.t('review_count', n: '320'),
-                      style: const TextStyle(fontSize: 11, color: C.muted)),
+                      style: const TextStyle(height: 1.4, fontSize: 12, color: C.muted)),
                 ],
               ),
               const SizedBox(width: 20),
@@ -570,7 +571,7 @@ class _ReviewsTab extends StatelessWidget {
                           children: [
                             Text('$i',
                                 style:
-                                    const TextStyle(fontSize: 11, color: C.muted)),
+                                    const TextStyle(height: 1.4, fontSize: 12, color: C.muted)),
                             const SizedBox(width: 6),
                             Expanded(
                               child: ClipRRect(
@@ -612,7 +613,7 @@ class _ReviewsTab extends StatelessWidget {
                       radius: 16,
                       backgroundColor: C.primarySoft,
                       child: Text(rv.$1[0],
-                          style: const TextStyle(
+                          style: const TextStyle(height: 1.4, 
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
                               color: C.primaryDark)),
@@ -623,13 +624,13 @@ class _ReviewsTab extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(rv.$1,
-                              style: const TextStyle(
+                              style: const TextStyle(height: 1.4, 
                                   fontSize: 13,
                                   fontWeight: FontWeight.w700,
                                   color: C.ink)),
                           Text(rv.$4,
-                              style: const TextStyle(
-                                  fontSize: 11, color: C.muted)),
+                              style: const TextStyle(height: 1.4, 
+                                  fontSize: 12, color: C.muted)),
                         ],
                       ),
                     ),
@@ -638,7 +639,7 @@ class _ReviewsTab extends StatelessWidget {
                         const Icon(Icons.star, size: 15, color: C.amber),
                         const SizedBox(width: 3),
                         Text(rv.$2,
-                            style: const TextStyle(
+                            style: const TextStyle(height: 1.4, 
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
                                 color: C.ink)),
@@ -675,7 +676,7 @@ class _AddAllButton extends StatelessWidget {
       backgroundColor: C.primary,
       foregroundColor: Colors.white,
       label: Text(context.t('add_shop'),
-          style: const TextStyle(fontWeight: FontWeight.w700)),
+          style: const TextStyle(height: 1.4, fontWeight: FontWeight.w700)),
       icon: const Icon(Icons.shopping_bag, size: 18),
     );
   }

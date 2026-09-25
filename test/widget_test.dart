@@ -209,7 +209,16 @@ void main() {
     expect(find.textContaining('Coconut'), findsWidgets);
     // Switch to steps tab.
     await tester.tap(find.text('ជំហានចម្អិន').first);
-    await tester.pump();
+    await tester.pumpAndSettle();
+    expect(find.text(m.steps.first), findsOneWidget);
+    // Switch to nutrition tab: kcal / carb / protein / fat rows.
+    await tester.tap(find.text('សារៈប្រាណ').first);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('kkal'), findsOneWidget);
+    // Switch to reviews tab: rating + reviewer entries.
+    await tester.tap(find.text('ការវាយតម្លៃ').first);
+    await tester.pumpAndSettle();
+    expect(find.text('Sari W.'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

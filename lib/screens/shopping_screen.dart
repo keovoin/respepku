@@ -19,7 +19,7 @@ class ShoppingScreen extends StatelessWidget {
         elevation: 0,
         titleSpacing: 20,
         title: Text(context.t('shopping'),
-            style: const TextStyle(
+            style: const TextStyle(height: 1.4, 
                 fontSize: 18, fontWeight: FontWeight.w800, color: C.ink)),
         actions: [
           if (items.isNotEmpty)
@@ -29,7 +29,7 @@ class ShoppingScreen extends StatelessWidget {
               },
               child: Text(context.t('done_all'),
                   style:
-                      const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                      const TextStyle(height: 1.4, fontSize: 13, fontWeight: FontWeight.w600)),
             ),
           const SizedBox(width: 8),
         ],
@@ -42,10 +42,10 @@ class ShoppingScreen extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text('🛒', style: TextStyle(fontSize: 44)),
+                      const Text('🛒', style: TextStyle(height: 1.4, fontSize: 44)),
                       const SizedBox(height: 14),
                       Text(context.t('shop_empty_t'),
-                          style: const TextStyle(
+                          style: const TextStyle(height: 1.4, 
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
                               color: C.ink)),
@@ -67,11 +67,11 @@ class ShoppingScreen extends StatelessWidget {
                         Expanded(
                           child: Text(
                               context.t('shop_sub'),
-                              style: const TextStyle(
+                              style: const TextStyle(height: 1.4, 
                                   fontSize: 12, color: C.muted)),
                         ),
                         Text('$done/${items.length}',
-                            style: const TextStyle(
+                            style: const TextStyle(height: 1.4, 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w800,
                                 color: C.primaryDark)),
@@ -128,7 +128,7 @@ class ShoppingScreen extends StatelessWidget {
                                   children: [
                                     Text(
                                       it.name,
-                                      style: TextStyle(
+                                      style: TextStyle(height: 1.4, 
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600,
                                           color: it.checked
@@ -141,14 +141,14 @@ class ShoppingScreen extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 2),
                                     Text(it.mealName,
-                                        style: const TextStyle(
-                                            fontSize: 11, color: C.muted)),
+                                        style: const TextStyle(height: 1.4, 
+                                            fontSize: 12, color: C.muted)),
                                   ],
                                 ),
                               ),
                               if (it.measure.isNotEmpty)
                                 Text(it.measure,
-                                    style: const TextStyle(
+                                    style: const TextStyle(height: 1.4, 
                                         fontSize: 13,
                                         fontWeight: FontWeight.w700,
                                         color: C.primaryDark)),

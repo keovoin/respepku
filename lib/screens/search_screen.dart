@@ -67,7 +67,7 @@ class _SearchScreenState extends State<SearchScreen> {
         elevation: 0,
         titleSpacing: 20,
         title: Text(_searched ? context.t('search_results') : context.t('search'),
-            style: const TextStyle(
+            style: const TextStyle(height: 1.4, 
                 fontSize: 18, fontWeight: FontWeight.w800, color: C.ink)),
         actions: [
           IconButton(
@@ -105,7 +105,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 isCollapsed: true,
                                 hintText: context.t('search_ph'),
                                 hintStyle:
-                                    const TextStyle(color: C.muted, fontSize: 14),
+                                    const TextStyle(height: 1.4, color: C.muted, fontSize: 14),
                               ),
                             ),
                           ),
@@ -140,7 +140,7 @@ class _SearchScreenState extends State<SearchScreen> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 6, 20, 0),
                 child: Text(context.t('category'),
-                    style: const TextStyle(
+                    style: const TextStyle(height: 1.4, 
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
                         color: C.ink)),
@@ -183,14 +183,14 @@ class _SearchScreenState extends State<SearchScreen> {
                               ),
                               child: Center(
                                   child: Text(c.emoji,
-                                      style: const TextStyle(fontSize: 22))),
+                                      style: const TextStyle(height: 1.4, fontSize: 22))),
                             ),
                             const SizedBox(width: 10),
                             Expanded(
                               child: Text(c.name,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
+                                  style: const TextStyle(height: 1.4, 
                                       fontSize: 13,
                                       fontWeight: FontWeight.w700,
                                       color: C.ink)),
@@ -224,12 +224,12 @@ class _SearchScreenState extends State<SearchScreen> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     const Text('🍽️',
-                                        style: TextStyle(fontSize: 40)),
+                                        style: TextStyle(height: 1.4, fontSize: 40)),
                                     const SizedBox(height: 12),
                                     Text(
                                         '${context.t('no_results')} “$_activeQuery”',
                                         style:
-                                            const TextStyle(color: C.muted)),
+                                            const TextStyle(height: 1.4, color: C.muted)),
                                   ],
                                 ),
                               )
@@ -292,13 +292,13 @@ class _ResultRow extends StatelessWidget {
                   Text(meal.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: const TextStyle(height: 1.4, 
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                           color: C.ink)),
                   const SizedBox(height: 4),
                   Text(meal.category,
-                      style: const TextStyle(fontSize: 12, color: C.muted)),
+                      style: const TextStyle(height: 1.4, fontSize: 12, color: C.muted)),
                 ],
               ),
             ),

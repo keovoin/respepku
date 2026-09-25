@@ -48,7 +48,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         elevation: 0,
         titleSpacing: 20,
         title: Text(context.t('favorites'),
-            style: const TextStyle(
+            style: const TextStyle(height: 1.4, 
                 fontSize: 18, fontWeight: FontWeight.w800, color: C.ink)),
       ),
       body: SafeArea(
@@ -57,7 +57,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
               child: Text(context.t('fav_sub'),
-                  style: const TextStyle(fontSize: 12, color: C.muted)),
+                  style: const TextStyle(height: 1.4, fontSize: 12, color: C.muted)),
             ),
             const SizedBox(height: 12),
             SizedBox(
@@ -82,7 +82,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                               color: active ? C.primary : C.line),
                         ),
                         child: Text(context.t(k),
-                            style: TextStyle(
+                            style: TextStyle(height: 1.4, 
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
                                 color: active ? Colors.white : C.ink)),
@@ -127,10 +127,10 @@ class _EmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('🤍', style: TextStyle(fontSize: 44)),
+            const Text('🤍', style: TextStyle(height: 1.4, fontSize: 44)),
             const SizedBox(height: 14),
             Text(context.t('fav_empty_t'),
-                style: const TextStyle(
+                style: const TextStyle(height: 1.4, 
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: C.ink)),

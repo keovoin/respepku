@@ -77,14 +77,14 @@ class SectionHeader extends StatelessWidget {
         children: [
           Expanded(
             child: Text(title,
-                style: const TextStyle(
+                style: const TextStyle(height: 1.4, 
                     fontSize: 17, fontWeight: FontWeight.w800, color: C.ink)),
           ),
           if (onSeeAll != null)
             TextButton(
               onPressed: onSeeAll,
               child: const Text('Lihat Semua',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                  style: TextStyle(height: 1.4, fontSize: 13, fontWeight: FontWeight.w600)),
             ),
         ],
       ),
@@ -154,7 +154,7 @@ class MealCardH extends StatelessWidget {
                   Text(meal.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: const TextStyle(height: 1.4, 
                           fontSize: 14, fontWeight: FontWeight.w700, color: C.ink)),
                   const SizedBox(height: 4),
                   Row(
@@ -163,7 +163,7 @@ class MealCardH extends StatelessWidget {
                         const Icon(Icons.star, size: 14, color: C.amber),
                         const SizedBox(width: 3),
                         Text(meal.rating!.toStringAsFixed(1),
-                            style: const TextStyle(
+                            style: const TextStyle(height: 1.4, 
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                                 color: C.muted)),
@@ -171,8 +171,8 @@ class MealCardH extends StatelessWidget {
                       const Spacer(),
                       if (meal.minutes != null)
                         Text('${meal.minutes} mnt',
-                            style: const TextStyle(
-                                fontSize: 11, color: C.muted)),
+                            style: const TextStyle(height: 1.4, 
+                                fontSize: 12, color: C.muted)),
                     ],
                   ),
                 ],
@@ -224,7 +224,7 @@ class MealCardRow extends StatelessWidget {
                   Text(meal.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: const TextStyle(height: 1.4, 
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                           color: C.ink)),
@@ -236,11 +236,11 @@ class MealCardRow extends StatelessWidget {
                         const SizedBox(width: 3),
                         Text(meal.rating!.toStringAsFixed(1),
                             style:
-                                const TextStyle(fontSize: 12, color: C.muted)),
+                                const TextStyle(height: 1.4, fontSize: 12, color: C.muted)),
                       ],
                       const SizedBox(width: 10),
                       Text(meal.category,
-                          style: const TextStyle(fontSize: 12, color: C.muted)),
+                          style: const TextStyle(height: 1.4, fontSize: 12, color: C.muted)),
                     ],
                   ),
                 ],
