@@ -446,12 +446,15 @@ function rptDates(){
   const f=S.rptFrom||rptYmd(ago.getFullYear(),ago.getMonth(),1),t=S.rptTo||rptYmd(Y,M,D);
   return{from:f,to:t};
 }
+let rptSeq=0;
 async function loadReport(){
+  const my=++rptSeq;
   const d=rptDates();
   try{
     const r=await call("orders.report",{from:d.from,to:d.to,status:S.rptStatus,category:S.rptCat});
+    if(my!==rptSeq)return; // a newer report request superseded this one
     S.rpt=r;renderReports();
-  }catch(e){toast(e.message,true);}
+  }catch(e){if(my===rptSeq)toast(e.message,true);}
 }
 function renderReports(){
   const r=S.rpt;
