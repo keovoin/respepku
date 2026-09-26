@@ -40,7 +40,15 @@ class _AuthScreenState extends State<AuthScreen> {
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _err = e.toString().replaceFirst('AccountError: ', ''));
+        final s = e.toString();
+        // Never show raw stack/network details to the user.
+        final isNet = s.contains('ClientException') ||
+            s.contains('SocketException') ||
+            s.contains('HandshakeException') ||
+            s.contains('Failed host lookup');
+        setState(() => _err = isNet
+            ? context.t('err_server')
+            : s.replaceFirst('AccountError: ', ''));
       }
     }
     if (mounted) setState(() => _busy = false);
