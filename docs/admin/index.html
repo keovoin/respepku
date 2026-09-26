@@ -87,6 +87,35 @@ h1{font-size:20px;font-weight:800;letter-spacing:-.02em}
   main{padding:18px 14px 40px}
   .topbar{padding:12px 14px}
 }
+@media(max-width:560px){
+  body{font-size:13px}
+  .topbar{padding:10px 12px;gap:10px}
+  .topbar .tt{font-size:15px}
+  .topbar .ts{display:none}
+  .livedot{display:none}
+  .topbar .btn{display:none}
+  main{padding:12px 10px 80px}
+  .kpis{grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px}
+  .kpi{padding:12px 12px 10px;border-radius:12px}
+  .kpi .v{font-size:17px}
+  .card{padding:13px 13px;margin-bottom:11px;border-radius:12px}
+  .chart{height:110px;gap:4px}
+  .chart .bar{min-width:6px}
+  /* tables → horizontal scroll */
+  .card:has(>table){padding:0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .card:has(>table) table{min-width:560px}
+  .card:has(>table) table th:first-child,.card:has(>table) table td:first-child{position:sticky;left:0;background:var(--card);z-index:1}
+  .card:has(>table) table th:first-child{background:var(--line-2)}
+  .row{flex-wrap:wrap}
+  .row select{max-width:100%}
+  details.od summary{padding:11px 12px;gap:8px}
+  .odbody{padding:12px}
+  .odbody .grid2{grid-template-columns:1fr}
+  .settings-grid{grid-template-columns:1fr}
+  .sub{font-size:11.5px;margin-bottom:12px}
+  .split{height:26px;font-size:10px}
+  .xl div{font-size:9px}
+}
 
 /* ---------- cards / kpis ---------- */
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:14px;box-shadow:var(--sh)}
@@ -225,6 +254,8 @@ hr{border:0;border-top:1px solid var(--line);margin:18px 0}
   </div>
   <button class="nav on" data-t="dash" onclick="go('dash')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span>Dashboard</span></button>
   <button class="nav" data-t="orders" onclick="go('orders')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13L22 12v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z"/></svg><span>Orders</span></button>
+  <button class="nav" data-t="customers" onclick="go('customers')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Customers</span></button>
+  <button class="nav" data-t="reports" onclick="go('reports')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg><span>Reports</span></button>
   <button class="nav" data-t="inv" onclick="go('inv')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg><span>Inventory</span></button>
   <button class="nav" data-t="sets" onclick="go('sets')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18M5 11V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4M4 11l1.2 8.2A2 2 0 0 0 7.2 21h9.6a2 2 0 0 0 2-1.8L20 11"/></svg><span>Recipe Sets</span></button>
   <button class="nav" data-t="promos" onclick="go('promos')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4L11 3.8A2 2 0 0 0 9.6 3H5a2 2 0 0 0-2 2v4.6c0 .5.2 1 .6 1.4l9.6 9.6a2 2 0 0 0 2.8 0l4.6-4.6a2 2 0 0 0 0-2.8z"/><circle cx="7.5" cy="7.5" r="1"/></svg><span>Promos</span></button>
@@ -244,6 +275,8 @@ hr{border:0;border-top:1px solid var(--line);margin:18px 0}
   <main id="main">
     <section id="p-dash"></section>
     <section id="p-orders" class="hide"></section>
+    <section id="p-customers" class="hide"></section>
+    <section id="p-reports" class="hide"></section>
     <section id="p-inv" class="hide"></section>
     <section id="p-sets" class="hide"></section>
     <section id="p-promos" class="hide"></section>
@@ -261,9 +294,9 @@ const API="https://swxpjxdzkwdilgkbbrnz.supabase.co/functions/v1/meal-admin";
 const ACC="https://swxpjxdzkwdilgkbbrnz.supabase.co/functions/v1/meal-account";
 const SK="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3eHBqeGR6a3dkaWxna2Jicm56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDkyMDAsImV4cCI6MjEwNTQ4NTIwMH0.1DBukjcG_9ny3GBCL0kr3mMuzucBDeCrdhrJ_Wq2J0o";
 const AUTHZ="Bea"+"rer "+SK;
-const TITLES={dash:["Dashboard","Store performance overview"],orders:["Orders","Everything customers check out"],inv:["Inventory","Costs power the dashboard profit & ROI"],sets:["Recipe Sets","Menu items, prices, costs, stock"],promos:["Promos","Discount codes for checkout"],banners:["Banners","Home carousel in the customer app"],settings:["Settings","Server-side configuration & integrations"]};
+const TITLES={dash:["Dashboard","Store performance overview"],orders:["Orders","Everything customers check out"],customers:["Customers","Everyone who registered or ordered"],reports:["Reports","Orders by day / week / month / custom range"],inv:["Inventory","Costs power the dashboard profit & ROI"],sets:["Recipe Sets","Menu items, prices, costs, stock"],promos:["Promos","Discount codes for checkout"],banners:["Banners","Home carousel in the customer app"],settings:["Settings","Server-side configuration & integrations"]};
 let PASS=localStorage.getItem("sfm_admin_pass")||"";
-let S={sets:[],orders:[],fin:null,stats:{},promos:[],banners:[],inv:[],moves:[],ofilter:"",tab:"dash"};
+let S={sets:[],orders:[],fin:null,stats:{},promos:[],banners:[],inv:[],moves:[],customers:[],custQ:"",ofilter:"",rpt:null,rptPeriod:"today",rptFrom:"",rptTo:"",rptStatus:"",rptCat:"",tab:"dash"};
 
 const KH="៛";
 function money(n){return KH+" "+Number(n||0).toLocaleString("en-US");}
@@ -290,12 +323,14 @@ function doLogout(){PASS="";localStorage.removeItem("sfm_admin_pass");location.r
 function enter(){document.getElementById("login").classList.add("hide");document.getElementById("shell").classList.remove("hide");refresh();}
 function go(t){S.tab=t;document.querySelectorAll(".nav[data-t]").forEach(n=>n.classList.toggle("on",n.dataset.t===t));
   document.getElementById("topTitle").textContent=TITLES[t][0];document.getElementById("topSub").textContent=TITLES[t][1];
-  ["dash","orders","inv","sets","promos","banners","settings"].forEach(p=>document.getElementById("p-"+p).classList.toggle("hide",p!==t));refresh();}
+  ["dash","orders","customers","reports","inv","sets","promos","banners","settings"].forEach(p=>document.getElementById("p-"+p).classList.toggle("hide",p!==t));refresh();}
 
 async function refresh(){
   try{
     if(S.tab==="dash"){const d=await call("orders.stats",{});S.fin=d.finance;S.stats=d.stats;renderDash();}
     if(S.tab==="orders"){const d=await call("orders.list",{limit:200});S.orders=d.orders;renderOrders();}
+    if(S.tab==="customers"){const d=await call("customers.list",{});S.customers=d.customers;renderCustomers();}
+    if(S.tab==="reports"){renderReports();await loadReport();}
     if(S.tab==="inv"){const a=await call("inventory.list",{});const b=await call("inventory.movements",{limit:60});S.inv=a.inventory;S.moves=b.movements;renderInv();}
     if(S.tab==="sets"){const d=await call("sets.list",{});S.sets=d.sets;renderSets();}
     if(S.tab==="promos"){const d=await call("promos.list",{});S.promos=d.promos;renderPromos();}
@@ -368,6 +403,96 @@ function renderOrders(){
 function setOrder(ref,st){
   if(st==="cancelled"&&!confirm("Cancel "+ref+"? Stock will be returned."))return;
   call("orders.update",{order_ref:ref,status:st}).then(()=>{toast("Order "+st);refresh();}).catch(e=>toast(e.message,true));
+}
+
+/* ---------------- CUSTOMERS ---------------- */
+function renderCustomers(){
+  const all=S.customers||[];
+  const q=(S.custQ||"").trim().toLowerCase();
+  const list=all.filter(c=>!q||[c.name,c.phone,c.tg_name,c.email].join(" ").toLowerCase().includes(q));
+  const withOrders=all.filter(c=>c.order_count>0);
+  const totOrders=all.reduce((a,c)=>a+c.order_count,0);
+  const totSpend=all.reduce((a,c)=>a+(c.total_spent||0),0);
+  document.getElementById("p-customers").innerHTML=
+  '<div class="kpis">'+
+   '<div class="kpi"><div class="ic o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="l">Registered</div><div class="v">'+all.length+'</div><div class="s">phone, PIN or Telegram</div></div>'+
+   '<div class="kpi"><div class="ic g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg></div><div class="l">Placed orders</div><div class="v">'+withOrders.length+'</div><div class="s">of '+all.length+' registered</div></div>'+
+   '<div class="kpi"><div class="ic b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13L22 12v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z"/></svg></div><div class="l">Orders</div><div class="v">'+totOrders+'</div><div class="s">all time</div></div>'+
+   '<div class="kpi"><div class="ic r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="l">Customer spend</div><div class="v">'+money(totSpend)+'</div><div class="s">live orders only</div></div>'+
+  '</div>'+
+  '<div class="card" style="padding:12px 16px"><div class="row"><input placeholder="Search name, phone, Telegram…" style="flex:1;min-width:160px" value="'+esc(S.custQ)+'" oninput="S.custQ=this.value;renderCustomers()">'
+  '<span class="small muted">'+list.length+' of '+all.length+'</span><button class="btn sm ghost" onclick="refresh()">&#8635; Refresh</button></div></div>'+
+  (list.length?
+   '<div class="card"><table><tr><th>Customer</th><th>Contact</th><th>Registered</th><th class="num">Orders</th><th class="num">Spent</th><th>Last order</th></tr>'+
+   list.map(c=>'<tr><td><b>'+esc(c.name||"—")+'</b>'+(c.address?'<br><span class="small muted">'+esc(c.address)+(c.delivery_time?' · '+esc(c.delivery_time):'')+'</span>':'')+'</td>'+
+   '<td>'+(c.phone?'<span class="mono small">'+esc(c.phone)+'</span>':'')+(c.tg_id?'<br><span class="small" style="color:var(--pri-d)">@'+esc(c.tg_name||("tg "+c.tg_id))+'</span>':'')+(c.email?'<br><span class="small muted">'+esc(c.email)+'</span>':'')+'</td>'+
+   '<td class="small">'+new Date(c.created_at).toLocaleDateString()+'</td>'+
+   '<td class="num"><b>'+c.order_count+'</b></td><td class="num">'+money(c.total_spent)+'</td>'+
+   '<td class="small">'+(c.last_order?new Date(c.last_order).toLocaleDateString():"—")+'</td></tr>').join('')+'</table></div>'
+  :'<div class="card empty">No customers found.'+(q?' Try clearing the search.':' Registration data appears here the moment a user signs up in the app (phone+PIN or Telegram).')+'</div>');
+}
+
+/* ---------------- REPORTS ---------------- */
+const RPT_CATS=["Chicken","Seafood","Pork","Beef","Side","Vegetarian","Vegan","Dessert","Miscellaneous","Other"];
+const RPT_STS=["pending","confirmed","preparing","out_for_delivery","delivered","cancelled","expired","failed"];
+const rptPad=n=>String(n).padStart(2,"0");
+const rptYmd=(y,m,d)=>y+"-"+rptPad(m+1)+"-"+rptPad(d);
+function rptDates(){
+  const now=new Date();const Y=now.getFullYear(),M=now.getMonth(),D=now.getDate();
+  if(S.rptPeriod==="today")return{from:rptYmd(Y,M,D),to:rptYmd(Y,M,D)};
+  if(S.rptPeriod==="week"){const mon=new Date(Y,M,D-((now.getDay()+6)%7));return{from:rptYmd(mon.getFullYear(),mon.getMonth(),mon.getDate()),to:rptYmd(Y,M,D)};}
+  if(S.rptPeriod==="month")return{from:rptYmd(Y,M,1),to:rptYmd(Y,M,D)};
+  const ago=new Date(Y,M-2,1);
+  const f=S.rptFrom||rptYmd(ago.getFullYear(),ago.getMonth(),1),t=S.rptTo||rptYmd(Y,M,D);
+  return{from:f,to:t};
+}
+async function loadReport(){
+  const d=rptDates();
+  try{
+    const r=await call("orders.report",{from:d.from,to:d.to,status:S.rptStatus,category:S.rptCat});
+    S.rpt=r;renderReports();
+  }catch(e){toast(e.message,true);}
+}
+function renderReports(){
+  const r=S.rpt;
+  const perds=[["today","Today"],["week","This week"],["month","This month"],["custom","Custom range"]];
+  const stopts=["pending","confirmed","preparing","out_for_delivery","delivered","cancelled","expired","failed"];
+  const el=document.getElementById("p-reports");
+  if(!r){el.innerHTML='<div class="card"><div class="row"><select onchange="S.rptPeriod=this.value;if(this.value!==\'custom\')loadReport()">'+perds.map(p=>'<option value="'+p[0]+'" '+(S.rptPeriod===p[0]?"selected":"")+">"+p[1]+'</option>').join('')+'</select><span class="muted small" id="rptSpin">loading…</span></div></div>';return;}
+  const t=r.totals;
+  const catopts=["<option value=''>All categories</option>"].concat(RPT_CATS.map(c=>'<option value="'+c+'" '+(S.rptCat===c?"selected":"")+">"+c+"</option>"));
+  const stopts2=["<option value=''>All statuses</option>"].concat(stopts.map(s=>'<option value="'+s+'" '+(S.rptStatus===s?"selected":"")+">"+s+"</option>"));
+  const days={};
+  for(const o of r.orders||[]){const d=new Date(o.created_at).toLocaleDateString("en-CA");(days[d]||={revenue:0,orders:0});days[d].revenue+=Number(o.total||0);days[d].orders+=1;}
+  const dayArr=Object.entries(days).sort((a,b)=>a[0]<b[0]?-1:1).slice(-31);
+  const mx=Math.max(1,...dayArr.map(d=>d[1].revenue));
+  const catRows=Object.entries(r.by_category||{}).sort((a,b)=>b[1].revenue-a[1].revenue);
+  const stRows=Object.entries(r.by_status||{}).sort((a,b)=>b[1].orders-a[1].orders);
+  el.innerHTML=
+  '<div class="card" style="padding:12px 16px"><div class="row" style="flex-wrap:wrap;gap:8px">'+
+   '<select onchange="S.rptPeriod=this.value;if(this.value!==\'custom\')loadReport();else renderReports();">'+perds.map(p=>'<option value="'+p[0]+'" '+(S.rptPeriod===p[0]?"selected":"")+">"+p[1]+'</option>').join('')+'</select>'+
+   (S.rptPeriod==="custom"
+     ?'<input type="date" value="'+(S.rptFrom||"")+'" onchange="S.rptFrom=this.value;loadReport()" style="max-width:160px">—<input type="date" value="'+(S.rptTo||"")+'" onchange="S.rptTo=this.value;loadReport()" style="max-width:160px">'
+     :'<span class="small muted">'+new Date(r.range.from).toLocaleDateString()+' → '+new Date(r.range.to).toLocaleDateString()+'</span>')+
+   '<select onchange="S.rptStatus=this.value;loadReport()">'+stopts2+'</select>'+
+   '<select onchange="S.rptCat=this.value;loadReport()">'+catopts+'</select>'+
+   '<span class="sp" style="flex:1"></span><button class="btn sm" onclick="loadReport()">Run report</button></div></div>'+
+  '<div class="kpis">'+
+   '<div class="kpi"><div class="ic o"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13L22 12v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6z"/></svg></div><div class="l">Orders</div><div class="v">'+t.orders+'</div><div class="s">'+(r.range.status?("status: "+r.range.status):"all statuses")+'</div></div>'+
+   '<div class="kpi"><div class="ic g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="l">Revenue</div><div class="v" style="color:var(--good)">'+money(t.revenue)+'</div><div class="s">live orders · COD '+money(t.cod_revenue)+' · QR '+money(t.qr_revenue)+'</div></div>'+
+   '<div class="kpi"><div class="ic b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><div class="l">Avg order</div><div class="v">'+money(t.avg_order)+'</div><div class="s">'+t.units+' sets · '+t.cancelled+' cancelled</div></div>'+
+   '<div class="kpi"><div class="ic r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H3l2 9h14l2-9z"/><path d="M5 13l1 7h12l1-7"/></svg></div><div class="l">Discounts</div><div class="v">'+money(t.discount)+'</div><div class="s">given in this range</div></div>'+
+  '</div>'+
+  '<div class="grid2">'+
+   '<div class="card"><div class="ch"><b>Revenue by day</b><span class="small muted">local time · up to 31 days</span></div>'+
+     (dayArr.length?'<div class="chart">'+dayArr.map(([d,v])=>'<div class="bar" style="height:'+Math.max(3,Math.round(v.revenue/mx*100))+'%" data-t="'+d+': '+money(v.revenue)+' ('+v.orders+' orders)"></div>').join('')+'</div><div class="xl">'+dayArr.map(([d])=>'<div>'+d.slice(5)+'</div>').join('')+'</div>':'<div class="empty">No orders in this range.</div>')+'</div>'+
+   '<div><div class="card"><div class="ch"><b>By food category</b></div>'+
+     (catRows.length?catRows.map(([c,v])=>'<div class="rowline"><span>'+esc(c)+' <span class="muted small">· '+v.orders+' orders · '+v.units+' sets</span></span><b>'+money(v.revenue)+'</b></div>').join(''):'<div class="empty">No live orders.</div>')+'</div>'+
+   '<div class="card" style="margin-top:14px"><div class="ch"><b>By status</b></div><div class="row" style="flex-wrap:wrap;gap:8px">'+
+     (stRows.length?stRows.map(([s,v])=>sbadge(s)+' <span class="small muted">'+v.orders+' · '+money(v.revenue)+'</span>').join(''):'<span class="small muted">none</span>')+'</div></div></div>'+
+  '</div>'+
+  '<div class="card" style="margin-top:14px;padding:12px 16px"><div class="row"><b style="font-size:13px">Orders in range</b><span class="small muted">'+(r.orders||[]).length+'</span><span class="sp" style="flex:1"></span></div></div>'+
+  (r.orders||[]).map(o=>'<details class="od"><summary>'+sbadge(o.status)+' <b style="font-size:13px">'+esc(o.order_ref)+'</b> <span class="muted small">'+new Date(o.created_at).toLocaleString()+'</span><span style="flex:1"></span><b style="font-size:14px">'+money(o.total)+'</b><span class="b '+(o.payment_method==="cod"?"pen":"info")+'">'+(o.payment_method==="cod"?"COD":"QR")+'</span></summary><div class="odbody"><div class="small">'+esc(o.customer_name)+' · '+esc(o.phone)+(o.address?' · '+esc(o.address):'')+'</div><div class="odbody" style="padding:6px 0">'+(o.items||[]).map(l=>'<div class="oit"><span>'+esc(l.name_en||l.meal_id)+' ×'+l.qty+'</span><span>'+money(l.line)+'</span></div>').join('')+'</div></div></details>').join('')||'';
 }
 
 /* ---------------- INVENTORY ---------------- */
