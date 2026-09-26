@@ -259,8 +259,7 @@ hr{border:0;border-top:1px solid var(--line);margin:18px 0}
 <script>
 const API="https://swxpjxdzkwdilgkbbrnz.supabase.co/functions/v1/meal-admin";
 const ACC="https://swxpjxdzkwdilgkbbrnz.supabase.co/functions/v1/meal-account";
-const SH1="eyJhbG...icm9", SH2="sZSI6ImFub24iLCJpYXQiOjE3ODk5MDkyMDAsImV4cCI6MjEwNTQ4NTIwMH0.1DBukjcG_9ny3GBCL0kr3mMuzucBDeCrdhrJ_Wq2J0o";
-const SK=SH1+SH2;
+const SK="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3eHBqeGR6a3dkaWxna2Jicm56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MDkyMDAsImV4cCI6MjEwNTQ4NTIwMH0.1DBukjcG_9ny3GBCL0kr3mMuzucBDeCrdhrJ_Wq2J0o";
 const AUTHZ="Bea"+"rer "+SK;
 const TITLES={dash:["Dashboard","Store performance overview"],orders:["Orders","Everything customers check out"],inv:["Inventory","Costs power the dashboard profit & ROI"],sets:["Recipe Sets","Menu items, prices, costs, stock"],promos:["Promos","Discount codes for checkout"],banners:["Banners","Home carousel in the customer app"],settings:["Settings","Server-side configuration & integrations"]};
 let PASS=localStorage.getItem("sfm_admin_pass")||"";
